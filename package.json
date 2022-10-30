@@ -1,5 +1,5 @@
 {
-  "name": "vite-react-ts-template",
+  "name": "react-carousel-sample",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,8 +14,8 @@
     "check-type": "tsc --noEmit",
     "test": "jest -c ./jest.config.ts",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "cp gh-pages/manager-head.html .storybook && BASE_PATH=/vite-react-ts-template/storybook/ build-storybook -s public -o docs/storybook && rm -f .storybook/manager-head.html",
-    "generate-gh-pages": "BASE_PATH=/vite-react-ts-template/ npm run build && rm -rf docs && cp -r dist docs && npm run build-storybook && cp gh-pages/404.html docs"
+    "build-storybook": "cp gh-pages/manager-head.html .storybook && BASE_PATH=/react-carousel-sample/storybook/ build-storybook -s public -o docs/storybook && rm -f .storybook/manager-head.html",
+    "generate-gh-pages": "BASE_PATH=/react-carousel-sample/ npm run build && rm -rf docs && cp -r dist docs && npm run build-storybook && cp gh-pages/404.html docs"
   },
   "dependencies": {
     "react": "18.2.0",
@@ -62,10 +62,10 @@
   "description": "React + TypeScript development template using Vite",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/50ra4/vite-react-ts-template.git"
+    "url": "git+https://github.com/50ra4/react-carousel-sample.git"
   },
   "bugs": {
-    "url": "https://github.com/50ra4/vite-react-ts-template/issues"
+    "url": "https://github.com/50ra4/react-carousel-sample/issues"
   },
-  "homepage": "https://github.com/50ra4/vite-react-ts-template#readme"
+  "homepage": "https://github.com/50ra4/react-carousel-sample#readme"
 }
