@@ -30,3 +30,13 @@ export const Main: ComponentStoryObj<typeof Carousel> = {
     items,
   },
 };
+
+export const AutoPlay: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-auto-play-story',
+    items,
+    options: {
+      autoplay: 3000,
+    },
+  },
+};

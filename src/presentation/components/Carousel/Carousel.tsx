@@ -1,4 +1,10 @@
-import React, { useCallback, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import styled, { keyframes } from 'styled-components';
 
 export type CarouselItem = {
@@ -6,16 +12,30 @@ export type CarouselItem = {
   caption: string;
 };
 
+export type CarouselOptions = {
+  /** autoplay milliseconds. default: no autoplay */
+  autoplay?: number;
+};
+
 export type CarouselProps = {
   className?: string;
   carouselKey: string;
   items: CarouselItem[];
+  options?: CarouselOptions;
 };
 
 const createSlideId = (carouselKey: string, itemKey: string) =>
   `${carouselKey}_${itemKey}`;
 
-export function Carousel({ className, carouselKey, items }: CarouselProps) {
+const getNextCarouselItem = (items: CarouselItem[], currentIndex: number) =>
+  currentIndex === items.length - 1 ? items[0] : items[currentIndex + 1];
+
+export function Carousel({
+  className,
+  carouselKey,
+  items,
+  options: { autoplay } = {},
+}: CarouselProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToSlide = useCallback((id: string) => {
@@ -27,30 +47,116 @@ export function Carousel({ className, carouselKey, items }: CarouselProps) {
     target.scrollIntoView();
   }, []);
 
+  const slides = useMemo(
+    () =>
+      items.map((item) => ({
+        ...item,
+        slideId: createSlideId(carouselKey, item.key),
+      })),
+    [carouselKey, items],
+  );
+
+  const [currentSlideId, setCurrentSlideId] = useState(slides[0].slideId);
+
+  useEffect(() => {
+    if (!rootRef.current) {
+      return;
+    }
+
+    const callback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+        setCurrentSlideId(entry.target.id);
+      });
+    };
+
+    const observer = new IntersectionObserver(callback, {
+      root: rootRef.current,
+      threshold: 1,
+    });
+
+    const elements = slides
+      .map(({ slideId }) => document.querySelector(`#${slideId}`))
+      .filter((v): v is NonNullable<typeof v> => !!v);
+
+    elements.forEach((elm) => {
+      observer.observe(elm);
+    });
+
+    return () => {
+      elements.forEach((elm) => {
+        observer.unobserve(elm);
+      });
+    };
+  }, [carouselKey, slides]);
+
+  const [isHover, setIsHover] = useState(false);
+
+  useEffect(() => {
+    if (!autoplay) {
+      return;
+    }
+
+    if (!isHover) {
+      return;
+    }
+
+    const currentSlideIndex = slides.findIndex(
+      (slide) => slide.slideId === currentSlideId,
+    );
+    if (currentSlideIndex < 0) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      const nextSlideId = createSlideId(
+        carouselKey,
+        getNextCarouselItem(slides, currentSlideIndex).key,
+      );
+
+      scrollToSlide(nextSlideId);
+    }, autoplay);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [autoplay, carouselKey, currentSlideId, isHover, scrollToSlide, slides]);
+
   return (
-    <Root ref={rootRef} className={className}>
+    <Root
+      ref={rootRef}
+      className={className}
+      onMouseEnter={() => {
+        setIsHover(true);
+      }}
+      onMouseLeave={() => {
+        setIsHover(false);
+      }}
+    >
       <Slider>
-        {items.map(({ key }, i) => (
-          <Slide key={key} id={createSlideId(carouselKey, key)}>
+        {slides.map(({ slideId }, i) => (
+          <Slide key={slideId} id={slideId}>
             <Snapper />
             <NavigationPreview
               onClick={() => {
-                const slideId = createSlideId(
+                const targetId = createSlideId(
                   carouselKey,
                   i === 0 ? items[items.length - 1].key : items[i - 1].key,
                 );
-                scrollToSlide(slideId);
+                scrollToSlide(targetId);
               }}
             >
               Go to previous slide
             </NavigationPreview>
             <NavigationNext
               onClick={() => {
-                const slideId = createSlideId(
+                const targetId = createSlideId(
                   carouselKey,
-                  i === items.length - 1 ? items[0].key : items[i + 1].key,
+                  getNextCarouselItem(slides, i).key,
                 );
-                scrollToSlide(slideId);
+                scrollToSlide(targetId);
               }}
             >
               Go to next slide
@@ -60,11 +166,10 @@ export function Carousel({ className, carouselKey, items }: CarouselProps) {
       </Slider>
       <Navigation>
         <NavigationList className={className}>
-          {items.map(({ key, caption }) => (
-            <NavigationItem key={key}>
+          {slides.map(({ slideId, caption }) => (
+            <NavigationItem key={slideId}>
               <NavigationButton
                 onClick={() => {
-                  const slideId = createSlideId(carouselKey, key);
                   scrollToSlide(slideId);
                 }}
               >
