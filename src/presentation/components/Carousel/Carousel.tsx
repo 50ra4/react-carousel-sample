@@ -220,8 +220,8 @@ const NavigationItem = styled.li`
 const NavigationButton = styled.button`
   display: inline-block;
   cursor: pointer;
-  width: 1rem;
-  height: 1rem;
+  width: 16px;
+  height: 16px;
   background-color: #333;
   border-radius: 50%;
   border: none;
@@ -249,8 +249,8 @@ const ArrowButton = ({
 
 const ArrowCircle = styled.button`
   cursor: pointer;
-  width: 4rem;
-  height: 4rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   font-size: 0;
   outline: 0;
@@ -261,11 +261,11 @@ const ArrowCircle = styled.button`
   align-items: center;
 `;
 const ArrowTriangle = styled.div`
-  margin-right: 0.5rem;
+  margin-right: 7.5px;
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 1rem 1.25rem 1rem 0;
+  border-width: 10px 12.5px 10px 0;
   border-color: transparent #ffe transparent transparent;
 `;
 
@@ -274,7 +274,7 @@ const NavigationPreview = styled(ArrowButton)`
   transform: translateY(-50%);
   position: absolute;
   top: 0;
-  left: 1rem;
+  left: 8px;
 `;
 
 const NavigationNext = styled(ArrowButton)`
@@ -282,5 +282,5 @@ const NavigationNext = styled(ArrowButton)`
   transform: translateY(-50%) rotate(180deg);
   position: absolute;
   top: 0;
-  right: 1rem;
+  right: 8px;
 `;
