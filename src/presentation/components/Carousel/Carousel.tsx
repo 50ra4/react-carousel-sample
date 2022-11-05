@@ -97,7 +97,7 @@ export function Carousel({
       return;
     }
 
-    if (isHover) {
+    if (!isHover) {
       return;
     }
 
