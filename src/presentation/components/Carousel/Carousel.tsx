@@ -138,6 +138,7 @@ export function Carousel({
       <Slider>
         {slides.map(({ slideId }, i) => (
           <Slide key={slideId} id={slideId}>
+            <SlideItem even={i % 2 === 0} />
             <Snapper />
             <NavigationPreview
               onClick={() => {
@@ -197,12 +198,13 @@ const Slide = styled.li`
   position: relative;
   flex: 0 0 100%;
   width: 100%;
-  background-color: #f99;
-  counter-increment: item;
+`;
 
-  &:nth-child(even) {
-    background-color: #99f;
-  }
+const SlideItem = styled.div<{ even?: boolean }>`
+  flex: 0 0 100%;
+  height: 100%;
+  background-color: ${({ even }) => (even ? '#99f' : '#f99')};
+  counter-increment: item;
 
   &:before {
     content: counter(item);
