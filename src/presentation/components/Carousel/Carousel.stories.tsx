@@ -11,18 +11,15 @@ const StyledWrapper = styled.div`
   max-width: 600px;
 `;
 
-const SlideItem = styled.div<{ even?: boolean }>`
+const SampleContainer = styled.div<{ even?: boolean }>`
   flex: 0 0 100%;
   height: 100%;
   background-color: ${({ even }) => (even ? '#99f' : '#f99')};
-  counter-increment: item;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  &:before {
-    content: counter(item);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -40%, 70px);
+  & > * {
     color: #fff;
     font-size: 2em;
   }
@@ -41,25 +38,36 @@ export default {
   decorators: [withStyleWrapper],
 } as ComponentMeta<typeof Carousel>;
 
-const items = Array.from({ length: 4 });
+const Item = ({ index }: { index: number }) => (
+  <SampleContainer even={index % 2 === 0}>
+    <span>{index + 1}</span>
+  </SampleContainer>
+);
 
-const SampleChildren = items.map((_, i) => (
-  <SlideItem key={i} even={i % 2 === 0} />
+const children = Array.from({ length: 4 }).map((_, i) => (
+  <Item key={i} index={i} />
 ));
 
 export const Main: ComponentStoryObj<typeof Carousel> = {
   args: {
-    carouselKey: 'carousel-main-story',
-    children: SampleChildren,
+    carouselKey: 'carousel-main',
+    children,
   },
 };
 
 export const AutoPlay: ComponentStoryObj<typeof Carousel> = {
   args: {
-    carouselKey: 'carousel-auto-play-story',
-    children: SampleChildren,
+    carouselKey: 'carousel-auto-play',
+    children,
     options: {
       autoplay: 3000,
     },
   },
 };
+
+export const AdditionalChildren = () => (
+  <Carousel carouselKey="carousel-additional-children">
+    {children}
+    <Item index={children.length} />
+  </Carousel>
+);
