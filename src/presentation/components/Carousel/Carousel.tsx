@@ -169,6 +169,7 @@ export function Carousel({
           {slides.map(({ slideId, caption }) => (
             <NavigationItem key={slideId}>
               <NavigationButton
+                isActive={currentSlideId === slideId}
                 onClick={() => {
                   scrollToSlide(slideId);
                 }}
@@ -247,12 +248,12 @@ const NavigationList = styled.ol`
 const NavigationItem = styled.li`
   display: inline-block;
 `;
-const NavigationButton = styled.button`
+const NavigationButton = styled.button<{ isActive?: boolean }>`
   display: inline-block;
   cursor: pointer;
   width: 16px;
   height: 16px;
-  background-color: #333;
+  background-color: ${({ isActive }) => (isActive ? '#ffe' : '#333')};
   border-radius: 50%;
   border: none;
   margin: 0 4px 24px;
