@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 export type CarouselItem = {
@@ -6,37 +6,52 @@ export type CarouselItem = {
   caption: string;
 };
 
-const createSlideId = (carouselKey: string, itemKey: string) =>
-  `${carouselKey}_${itemKey}`;
-
-export function Carousel({
-  className,
-  carouselKey,
-  items,
-}: {
+export type CarouselProps = {
   className?: string;
   carouselKey: string;
   items: CarouselItem[];
-}) {
+};
+
+const createSlideId = (carouselKey: string, itemKey: string) =>
+  `${carouselKey}_${itemKey}`;
+
+export function Carousel({ className, carouselKey, items }: CarouselProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToSlide = useCallback((id: string) => {
+    const target: HTMLElement | undefined =
+      rootRef.current?.querySelector(`#${id}`) ?? undefined;
+    if (!target) {
+      return;
+    }
+    target.scrollIntoView();
+  }, []);
+
   return (
-    <Root className={className}>
+    <Root ref={rootRef} className={className}>
       <Slider>
         {items.map(({ key }, i) => (
           <Slide key={key} id={createSlideId(carouselKey, key)}>
             <Snapper />
             <NavigationPreview
-              href={`#${createSlideId(
-                carouselKey,
-                i === 0 ? items[items.length - 1].key : items[i - 1].key,
-              )}`}
+              onClick={() => {
+                const slideId = createSlideId(
+                  carouselKey,
+                  i === 0 ? items[items.length - 1].key : items[i - 1].key,
+                );
+                scrollToSlide(slideId);
+              }}
             >
               Go to previous slide
             </NavigationPreview>
             <NavigationNext
-              href={`#${createSlideId(
-                carouselKey,
-                i === items.length - 1 ? items[0].key : items[i + 1].key,
-              )}`}
+              onClick={() => {
+                const slideId = createSlideId(
+                  carouselKey,
+                  i === items.length - 1 ? items[0].key : items[i + 1].key,
+                );
+                scrollToSlide(slideId);
+              }}
             >
               Go to next slide
             </NavigationNext>
@@ -44,11 +59,16 @@ export function Carousel({
         ))}
       </Slider>
       <Navigation>
-        <NavigationList>
+        <NavigationList className={className}>
           {items.map(({ key, caption }) => (
             <NavigationItem key={key}>
-              <NavigationButton href={`#${createSlideId(carouselKey, key)}`}>
-                go to {caption}
+              <NavigationButton
+                onClick={() => {
+                  const slideId = createSlideId(carouselKey, key);
+                  scrollToSlide(slideId);
+                }}
+              >
+                Go to {caption}
               </NavigationButton>
             </NavigationItem>
           ))}
@@ -197,41 +217,44 @@ const NavigationList = styled.ol`
 const NavigationItem = styled.li`
   display: inline-block;
 `;
-const NavigationButton = styled.a`
+const NavigationButton = styled.button`
   display: inline-block;
+  cursor: pointer;
   width: 1rem;
   height: 1rem;
   background-color: #333;
-  background-clip: content-box;
-  border: 0.25rem solid transparent;
   border-radius: 50%;
+  border: none;
+  margin: 0 4px 24px;
   font-size: 0;
   transition: transform 0.1s;
 `;
 
-const ArrowLink = ({
+const ArrowButton = ({
   className,
-  href,
+  onClick,
   children,
 }: {
   className?: string;
-  href: string;
+  onClick: () => void;
   children?: React.ReactNode;
 }) => {
   return (
-    <ArrowCircle className={className} href={href}>
+    <ArrowCircle className={className} onClick={onClick}>
       <ArrowTriangle />
       {children}
     </ArrowCircle>
   );
 };
 
-const ArrowCircle = styled.a`
+const ArrowCircle = styled.button`
+  cursor: pointer;
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
   font-size: 0;
   outline: 0;
+  border: none;
   background-color: #333;
   display: flex;
   justify-content: center;
@@ -246,7 +269,7 @@ const ArrowTriangle = styled.div`
   border-color: transparent #ffe transparent transparent;
 `;
 
-const NavigationPreview = styled(ArrowLink)`
+const NavigationPreview = styled(ArrowButton)`
   margin-top: 37.5%;
   transform: translateY(-50%);
   position: absolute;
@@ -254,7 +277,7 @@ const NavigationPreview = styled(ArrowLink)`
   left: 1rem;
 `;
 
-const NavigationNext = styled(ArrowLink)`
+const NavigationNext = styled(ArrowButton)`
   margin-top: 37.5%;
   transform: translateY(-50%) rotate(180deg);
   position: absolute;

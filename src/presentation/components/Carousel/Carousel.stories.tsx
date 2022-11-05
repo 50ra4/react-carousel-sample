@@ -8,7 +8,7 @@ import { Carousel, CarouselItem } from '@/components/Carousel/Carousel';
 
 const withGlobalStyle: DecoratorFn = (Story, context) => {
   return (
-    <div style={{ width: '600px' }}>
+    <div style={{ maxWidth: '600px' }}>
       <Story {...context} />
     </div>
   );
