@@ -37,12 +37,17 @@ export function Carousel({
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToSlide = useCallback((id: string) => {
-    const target: HTMLElement | undefined =
-      rootRef.current?.querySelector(`#${id}`) ?? undefined;
-    if (!target) {
+    const rootElement = rootRef.current;
+    if (!rootElement) {
       return;
     }
-    target.scrollIntoView();
+    const targetElement: HTMLElement | null = rootElement.querySelector(
+      `#${id}`,
+    );
+    if (!targetElement) {
+      return;
+    }
+    targetElement.scrollIntoView();
   }, []);
 
   const slides = useMemo(
