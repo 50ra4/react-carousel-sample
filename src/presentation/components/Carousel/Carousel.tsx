@@ -34,15 +34,25 @@ export function Carousel({
   options: { autoplay } = {},
   children,
 }: CarouselProps) {
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const sliderRef = useRef<HTMLOListElement | null>(null);
 
   const scrollToSlide = useCallback((id: string) => {
-    const target: HTMLElement | undefined =
-      rootRef.current?.querySelector(`#${id}`) ?? undefined;
-    if (!target) {
+    const sliderElement = sliderRef.current;
+    if (!sliderElement) {
       return;
     }
-    target.scrollIntoView();
+
+    const targetElement: HTMLElement | null = sliderElement.querySelector(
+      `#${id}`,
+    );
+    if (!targetElement) {
+      return;
+    }
+
+    sliderElement.scrollTo({
+      left:
+        sliderElement.scrollLeft + targetElement.getBoundingClientRect().left,
+    });
   }, []);
 
   const slides = useMemo(
@@ -57,7 +67,7 @@ export function Carousel({
   const [currentSlideId, setCurrentSlideId] = useState(slides[0].slideId);
 
   useEffect(() => {
-    if (!rootRef.current) {
+    if (!sliderRef.current) {
       return;
     }
 
@@ -71,7 +81,7 @@ export function Carousel({
     };
 
     const observer = new IntersectionObserver(callback, {
-      root: rootRef.current,
+      root: sliderRef.current,
       threshold: 1,
     });
 
@@ -97,7 +107,7 @@ export function Carousel({
       return;
     }
 
-    if (!isHover) {
+    if (isHover) {
       return;
     }
 
@@ -124,7 +134,6 @@ export function Carousel({
 
   return (
     <Root
-      ref={rootRef}
       className={className}
       onMouseEnter={() => {
         setIsHover(true);
@@ -133,7 +142,7 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider>
+      <Slider ref={sliderRef}>
         {slides.map(({ slideId, child }, i) => (
           <Slide key={slideId} id={slideId}>
             {child}
