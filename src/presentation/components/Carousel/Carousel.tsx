@@ -7,11 +7,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
-export type CarouselItem = {
-  key: string;
-  caption: string;
-};
-
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
@@ -20,21 +15,24 @@ export type CarouselOptions = {
 export type CarouselProps = {
   className?: string;
   carouselKey: string;
-  items: CarouselItem[];
   options?: CarouselOptions;
+  children: React.ReactNode;
 };
 
-const createSlideId = (carouselKey: string, itemKey: string) =>
-  `${carouselKey}_${itemKey}`;
+const createSlideId = (carouselKey: string, index: number) =>
+  `${carouselKey}_${index}`;
 
-const getNextCarouselItem = (items: CarouselItem[], currentIndex: number) =>
-  currentIndex === items.length - 1 ? items[0] : items[currentIndex + 1];
+const getNextSlideIndex = (length: number, currentIndex: number) =>
+  currentIndex === length - 1 ? 0 : currentIndex + 1;
+
+const getPrevSlideIndex = (length: number, currentIndex: number) =>
+  currentIndex === 0 ? length - 1 : currentIndex - 1;
 
 export function Carousel({
   className,
   carouselKey,
-  items,
   options: { autoplay } = {},
+  children,
 }: CarouselProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -49,11 +47,11 @@ export function Carousel({
 
   const slides = useMemo(
     () =>
-      items.map((item) => ({
-        ...item,
-        slideId: createSlideId(carouselKey, item.key),
+      React.Children.toArray(children).map((child, i) => ({
+        child,
+        slideId: createSlideId(carouselKey, i),
       })),
-    [carouselKey, items],
+    [carouselKey, children],
   );
 
   const [currentSlideId, setCurrentSlideId] = useState(slides[0].slideId);
@@ -113,7 +111,7 @@ export function Carousel({
     const timer = setInterval(() => {
       const nextSlideId = createSlideId(
         carouselKey,
-        getNextCarouselItem(slides, currentSlideIndex).key,
+        getNextSlideIndex(slides.length, currentSlideIndex),
       );
 
       scrollToSlide(nextSlideId);
@@ -136,14 +134,15 @@ export function Carousel({
       }}
     >
       <Slider>
-        {slides.map(({ slideId }, i) => (
+        {slides.map(({ slideId, child }, i) => (
           <Slide key={slideId} id={slideId}>
+            {child}
             <Snapper />
             <NavigationPreview
               onClick={() => {
                 const targetId = createSlideId(
                   carouselKey,
-                  i === 0 ? items[items.length - 1].key : items[i - 1].key,
+                  getPrevSlideIndex(slides.length, i),
                 );
                 scrollToSlide(targetId);
               }}
@@ -154,7 +153,7 @@ export function Carousel({
               onClick={() => {
                 const targetId = createSlideId(
                   carouselKey,
-                  getNextCarouselItem(slides, i).key,
+                  getNextSlideIndex(slides.length, i),
                 );
                 scrollToSlide(targetId);
               }}
@@ -166,7 +165,7 @@ export function Carousel({
       </Slider>
       <Navigation>
         <NavigationList className={className}>
-          {slides.map(({ slideId, caption }) => (
+          {slides.map(({ slideId }, i) => (
             <NavigationItem key={slideId}>
               <NavigationButton
                 isActive={currentSlideId === slideId}
@@ -174,7 +173,7 @@ export function Carousel({
                   scrollToSlide(slideId);
                 }}
               >
-                Go to {caption}
+                Go to {i + 1} slide
               </NavigationButton>
             </NavigationItem>
           ))}
@@ -197,22 +196,6 @@ const Slide = styled.li`
   position: relative;
   flex: 0 0 100%;
   width: 100%;
-  background-color: #f99;
-  counter-increment: item;
-
-  &:nth-child(even) {
-    background-color: #99f;
-  }
-
-  &:before {
-    content: counter(item);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -40%, 70px);
-    color: #fff;
-    font-size: 2em;
-  }
 `;
 
 const Root = styled.div`
