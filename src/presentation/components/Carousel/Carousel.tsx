@@ -5,7 +5,7 @@ import React, {
   useState,
   useMemo,
 } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 export type CarouselItem = {
   key: string;
@@ -183,51 +183,6 @@ export function Carousel({
   );
 }
 
-const toNext = keyframes`
-  75% {
-    left: 0;
-  }
-  95% {
-    left: 100%;
-  }
-  98% {
-    left: 100%;
-  }
-  99% {
-    left: 0;
-  }
-`;
-
-const toStart = keyframes`
-  75% {
-    left: 0;
-  }
-  95% {
-    left: -300%;
-  }
-  98% {
-    left: -300%;
-  }
-  99% {
-    left: 0;
-  }
-`;
-
-const snap = keyframes`
-  96% {
-    scroll-snap-align: center;
-  }
-  97% {
-    scroll-snap-align: none;
-  }
-  99% {
-    scroll-snap-align: none;
-  }
-  100% {
-    scroll-snap-align: center;
-  }
-`;
-
 const Snapper = styled.div`
   position: absolute;
   top: 0;
@@ -264,36 +219,6 @@ const Root = styled.div`
   padding-top: 75%;
   filter: drop-shadow(0 0 10px #0003);
   perspective: 100px;
-
-  /* animation
-  @media (prefers-reduced-motion: reduce) {
-    ${Snapper} {
-      animation-name: none;
-    }
-  }
-
-  @media (hover: hover) {
-    ${Snapper} {
-      animation-name: ${toNext}, ${snap};
-      animation-timing-function: ease;
-      animation-duration: 4s;
-      animation-iteration-count: infinite;
-    }
-
-    ${Slide}:last-child {
-      ${Snapper} {
-        animation-name: ${toStart}, ${snap};
-      }
-    }
-  }
-
-  &:hover,
-  &:focus-within {
-    ${Snapper} {
-      animation-name: none;
-    }
-  } 
-  */
 `;
 
 const Slider = styled.ol`
