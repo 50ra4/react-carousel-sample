@@ -5,7 +5,7 @@ import type {
 } from '@storybook/react';
 import React from 'react';
 import styled from 'styled-components';
-import { Carousel, CarouselItem } from '@/components/Carousel/Carousel';
+import { Carousel } from '@/components/Carousel/Carousel';
 
 const StyledWrapper = styled.div`
   max-width: 600px;
@@ -41,13 +41,10 @@ export default {
   decorators: [withStyleWrapper],
 } as ComponentMeta<typeof Carousel>;
 
-const items: CarouselItem[] = Array.from({ length: 4 }).map((_, i) => ({
-  key: `${i + 1}`,
-  caption: `slide${i + 1}`,
-}));
+const items = Array.from({ length: 4 });
 
-const SampleChildren = items.map(({ key }, i) => (
-  <SlideItem key={key} even={i % 2 === 0} />
+const SampleChildren = items.map((_, i) => (
+  <SlideItem key={i} even={i % 2 === 0} />
 ));
 
 export const Main: ComponentStoryObj<typeof Carousel> = {

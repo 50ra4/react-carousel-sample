@@ -7,11 +7,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
-export type CarouselItem = {
-  key: string;
-  caption: string;
-};
-
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
