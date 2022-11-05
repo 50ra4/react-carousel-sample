@@ -4,19 +4,20 @@ import type {
   DecoratorFn,
 } from '@storybook/react';
 import React from 'react';
+import styled from 'styled-components';
 import { Carousel, CarouselItem } from '@/components/Carousel/Carousel';
 
-const withGlobalStyle: DecoratorFn = (Story, context) => {
+const withStyleWrapper: DecoratorFn = (Story, context) => {
   return (
-    <div style={{ maxWidth: '600px' }}>
+    <StyledWrapper>
       <Story {...context} />
-    </div>
+    </StyledWrapper>
   );
 };
 
 export default {
   component: Carousel,
-  decorators: [withGlobalStyle],
+  decorators: [withStyleWrapper],
 } as ComponentMeta<typeof Carousel>;
 
 const items: CarouselItem[] = Array.from({ length: 4 }).map((_, i) => ({
@@ -40,3 +41,7 @@ export const AutoPlay: ComponentStoryObj<typeof Carousel> = {
     },
   },
 };
+
+const StyledWrapper = styled.div`
+  max-width: 600px;
+`;
