@@ -140,6 +140,7 @@ const Root = styled.div`
   filter: drop-shadow(0 0 10px #0003);
   perspective: 100px;
 
+  /* animation
   @media (prefers-reduced-motion: reduce) {
     ${Snapper} {
       animation-name: none;
@@ -166,7 +167,8 @@ const Root = styled.div`
     ${Snapper} {
       animation-name: none;
     }
-  }
+  } 
+  */
 `;
 
 const Slider = styled.ol`
