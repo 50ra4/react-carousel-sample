@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import styled from 'styled-components';
+import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
@@ -147,7 +148,7 @@ export function Carousel({
           <Slide key={slideId} id={slideId}>
             {child}
             <Snapper />
-            <NavigationPreview
+            <PreviewButton
               onClick={() => {
                 const targetId = createSlideId(
                   carouselKey,
@@ -157,8 +158,8 @@ export function Carousel({
               }}
             >
               Go to previous slide
-            </NavigationPreview>
-            <NavigationNext
+            </PreviewButton>
+            <NextButton
               onClick={() => {
                 const targetId = createSlideId(
                   carouselKey,
@@ -168,7 +169,7 @@ export function Carousel({
               }}
             >
               Go to next slide
-            </NavigationNext>
+            </NextButton>
           </Slide>
         ))}
       </Slider>
@@ -253,46 +254,7 @@ const NavigationButton = styled.button<{ isActive?: boolean }>`
   transition: transform 0.1s;
 `;
 
-const ArrowButton = ({
-  className,
-  onClick,
-  children,
-}: {
-  className?: string;
-  onClick: () => void;
-  children?: React.ReactNode;
-}) => {
-  return (
-    <ArrowCircle className={className} onClick={onClick}>
-      <ArrowTriangle />
-      {children}
-    </ArrowCircle>
-  );
-};
-
-const ArrowCircle = styled.button`
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 0;
-  outline: 0;
-  border: none;
-  background-color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ArrowTriangle = styled.div`
-  margin-right: 4px;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 6px 10px 6px 0;
-  border-color: transparent #ffe transparent transparent;
-`;
-
-const NavigationPreview = styled(ArrowButton)`
+const PreviewButton = styled(CircleTriangleButton)`
   margin-top: 37.5%;
   transform: translateY(-50%);
   position: absolute;
@@ -300,7 +262,7 @@ const NavigationPreview = styled(ArrowButton)`
   left: 8px;
 `;
 
-const NavigationNext = styled(ArrowButton)`
+const NextButton = styled(CircleTriangleButton)`
   margin-top: 37.5%;
   transform: translateY(-50%) rotate(180deg);
   position: absolute;
