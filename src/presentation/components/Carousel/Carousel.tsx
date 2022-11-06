@@ -173,22 +173,22 @@ export function Carousel({
           </Slide>
         ))}
       </Slider>
-      <Navigation>
-        <NavigationList className={className}>
+      <Indicator>
+        <IndicatorList className={className}>
           {slides.map(({ slideId }, i) => (
-            <NavigationItem key={slideId}>
-              <NavigationButton
+            <IndicatorItem key={slideId}>
+              <IndicatorButton
                 isActive={currentSlideId === slideId}
                 onClick={() => {
                   scrollToSlide(slideId);
                 }}
               >
                 Go to {i + 1} slide
-              </NavigationButton>
-            </NavigationItem>
+              </IndicatorButton>
+            </IndicatorItem>
           ))}
-        </NavigationList>
-      </Navigation>
+        </IndicatorList>
+      </Indicator>
     </Root>
   );
 }
@@ -223,25 +223,24 @@ const Slider = styled.ol`
   left: 0;
   display: flex;
   overflow-x: scroll;
-  counter-reset: item;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
 `;
 
-const Navigation = styled.aside`
+const Indicator = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   text-align: center;
 `;
-const NavigationList = styled.ol`
+const IndicatorList = styled.ol`
   display: inline-block;
 `;
-const NavigationItem = styled.li`
+const IndicatorItem = styled.li`
   display: inline-block;
 `;
-const NavigationButton = styled.button<{ isActive?: boolean }>`
+const IndicatorButton = styled.button<{ isActive?: boolean }>`
   display: inline-block;
   cursor: pointer;
   width: 16px;
@@ -261,7 +260,6 @@ const PreviewButton = styled(CircleTriangleButton)`
   top: 0;
   left: 8px;
 `;
-
 const NextButton = styled(CircleTriangleButton)`
   margin-top: 37.5%;
   transform: translateY(-50%) rotate(180deg);
