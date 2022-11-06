@@ -44,8 +44,8 @@ const LetterBox = styled(Image)`
 export const LetterBoxImage = () => <LetterBox {...args} />;
 
 const PillarBox = styled(Image)`
-  width: 225px;
-  height: 225px;
+  width: 400px;
+  height: 200px;
 `;
 
 export const PillarBoxImage = () => <PillarBox {...args} />;
