@@ -25,10 +25,14 @@ export default {
   decorators: [withStyleWrapper],
 } as ComponentMeta<typeof Image>;
 
+const args: React.ComponentProps<typeof Image> = {
+  src: 'images/sky_00009.jpg',
+  caption: 'sky image',
+};
+
 export const Main: ComponentStoryObj<typeof Image> = {
   args: {
-    src: 'images/sky_00009.jpg',
-    caption: 'sky image',
+    ...args,
   },
 };
 
@@ -37,15 +41,11 @@ const LetterBox = styled(Image)`
   height: 225px;
 `;
 
-export const LetterBoxImage = () => (
-  <LetterBox src="images/sky_00009.jpg" caption="sky image" />
-);
+export const LetterBoxImage = () => <LetterBox {...args} />;
 
 const PillarBox = styled(Image)`
   width: 225px;
   height: 225px;
 `;
 
-export const PillarBoxImage = () => (
-  <PillarBox src="images/sky_00009.jpg" caption="sky image" />
-);
+export const PillarBoxImage = () => <PillarBox {...args} />;
