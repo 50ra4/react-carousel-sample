@@ -272,8 +272,8 @@ const ArrowButton = ({
 
 const ArrowCircle = styled.button`
   cursor: pointer;
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   font-size: 0;
   outline: 0;
@@ -284,11 +284,11 @@ const ArrowCircle = styled.button`
   align-items: center;
 `;
 const ArrowTriangle = styled.div`
-  margin-right: 7.5px;
+  margin-right: 4px;
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 10px 12.5px 10px 0;
+  border-width: 6px 10px 6px 0;
   border-color: transparent #ffe transparent transparent;
 `;
 
