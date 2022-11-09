@@ -1,7 +1,14 @@
 # react-carousel-sample
 
-このプロジェクトは Vite、TypeScript、React を用いた Web アプリケーション開発向けの Template です。
-一部、サンプルとなるソースコードを含んでいます。
+このプロジェクトは React で実装した Carousel の コンポーネントを作成したものです。
+
+成果物は`github pages`に deploy しているので、以下の URL から確認できます。
+
+https://50ra4.github.io/react-carousel-sample/
+
+また、storybook は下記の URL から確認できます。
+
+https://50ra4.github.io/react-carousel-sample/storybook/
 
 ## Setup
 
