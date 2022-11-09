@@ -60,9 +60,7 @@ export const AutoPlay: ComponentStoryObj<typeof Carousel> = {
   args: {
     carouselKey: 'carousel-auto-play',
     children,
-    options: {
-      autoplay: 3000,
-    },
+    autoplay: 3000,
   },
 };
 

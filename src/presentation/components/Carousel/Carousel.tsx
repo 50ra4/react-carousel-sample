@@ -13,10 +13,9 @@ export type CarouselOptions = {
   autoplay?: number;
 };
 
-export type CarouselProps = {
+export type CarouselProps = CarouselOptions & {
   className?: string;
   carouselKey: string;
-  options?: CarouselOptions;
   children: React.ReactNode;
 };
 
@@ -32,7 +31,7 @@ const getPrevSlideIndex = (length: number, currentIndex: number) =>
 export function Carousel({
   className,
   carouselKey,
-  options: { autoplay } = {},
+  autoplay,
   children,
 }: CarouselProps) {
   const sliderRef = useRef<HTMLOListElement | null>(null);
