@@ -19,7 +19,6 @@ export function SubSection({ className, title, children }: Props) {
 const Section = styled.section`
   & > h3 {
     line-height: 32px;
-    height: 32px;
     vertical-align: middle;
     font-weight: bold;
     font-size: 24px;
