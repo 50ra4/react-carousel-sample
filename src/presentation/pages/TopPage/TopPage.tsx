@@ -2,9 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import { Carousel } from '@/components/Carousel/Carousel';
 import { CarouselSampleSlide } from '@/components/Carousel/CarouselSampleSlide';
+import { Image } from '@/components/Image/Image';
 import { SubSection } from '@/components/SubSection/SubSection';
 
 const Array4 = Array.from({ length: 4 }).map((_, i) => i + 1);
+const IMAGE_LIST = [
+  { src: 'images/sky_00009.jpg', caption: 'sky_00009' },
+  { src: 'images/sky_00023.jpg', caption: 'sky_00023' },
+  { src: 'images/sky_00036.jpg', caption: 'sky_00036' },
+  { src: 'images/sky_00037.jpg', caption: 'sky_00037' },
+  { src: 'images/sky_00200.jpg', caption: 'sky_00200' },
+];
 
 function TopPage() {
   return (
@@ -19,21 +27,13 @@ function TopPage() {
           </Carousel>
         </StyledSubSection>
 
-        <StyledSubSection title="multiple children">
-          <Carousel carouselKey="multiple">
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count} count={count} />
-            ))}
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count + 4} count={count + 4} />
-            ))}
-          </Carousel>
-        </StyledSubSection>
-
         <StyledSubSection title="autoplay 3s">
           <Carousel carouselKey="autoplay-3s" autoplay={3000}>
             {Array4.map((count) => (
               <CarouselSampleSlide key={count} count={count} />
+            ))}
+            {Array4.map((count) => (
+              <CarouselSampleSlide key={count} count={count + 4} />
             ))}
           </Carousel>
         </StyledSubSection>
@@ -42,6 +42,14 @@ function TopPage() {
           <Carousel carouselKey="autoplay-5s" autoplay={5000}>
             {Array4.map((count) => (
               <CarouselSampleSlide key={count} count={count} />
+            ))}
+          </Carousel>
+        </StyledSubSection>
+
+        <StyledSubSection title="images">
+          <Carousel carouselKey="images">
+            {IMAGE_LIST.map(({ src, caption }) => (
+              <Image key={src} src={src} caption={caption} />
             ))}
           </Carousel>
         </StyledSubSection>
