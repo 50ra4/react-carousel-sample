@@ -5,25 +5,12 @@ import type {
 } from '@storybook/react';
 import React from 'react';
 import styled from 'styled-components';
+import { CarouselSampleSlide } from './CarouselSampleSlide';
 import { Carousel } from '@/components/Carousel/Carousel';
 import { Image } from '@/components/Image/Image';
 
 const StyledWrapper = styled.div`
   max-width: 600px;
-`;
-
-const SampleContainer = styled.div<{ even?: boolean }>`
-  flex: 0 0 100%;
-  height: 100%;
-  background-color: ${({ even }) => (even ? '#99f' : '#f99')};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  & > * {
-    color: #fff;
-    font-size: 2em;
-  }
 `;
 
 const withStyleWrapper: DecoratorFn = (Story, context) => {
@@ -40,9 +27,9 @@ export default {
 } as ComponentMeta<typeof Carousel>;
 
 const Item = ({ index }: { index: number }) => (
-  <SampleContainer even={index % 2 === 0}>
+  <CarouselSampleSlide even={index % 2 === 0}>
     <span>{index + 1}</span>
-  </SampleContainer>
+  </CarouselSampleSlide>
 );
 
 const children = Array.from({ length: 4 }).map((_, i) => (
