@@ -49,9 +49,12 @@ export function Carousel({
       return;
     }
 
+    const scrollX = sliderElement.scrollLeft;
+    const sliderPosition = sliderElement.getBoundingClientRect().left;
+    const targetPosition = targetElement.getBoundingClientRect().left;
+
     sliderElement.scrollTo({
-      left:
-        sliderElement.scrollLeft + targetElement.getBoundingClientRect().left,
+      left: scrollX + targetPosition - sliderPosition,
     });
   }, []);
 
