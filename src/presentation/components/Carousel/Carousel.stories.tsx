@@ -81,10 +81,14 @@ const IMAGE_LIST = [
   { src: 'images/sky_00200.jpg', caption: 'sky_00200' },
 ];
 
+const SampleImage = styled(Image)`
+  height: calc(100% - 2px);
+`;
+
 export const ImageCarousel = () => (
   <Carousel carouselKey="carousel-image">
     {IMAGE_LIST.map(({ src, caption }) => (
-      <Image key={src} src={src} caption={caption} />
+      <SampleImage key={src} src={src} caption={caption} />
     ))}
   </Carousel>
 );
