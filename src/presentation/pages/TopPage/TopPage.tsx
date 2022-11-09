@@ -19,10 +19,13 @@ function TopPage() {
           </Carousel>
         </StyledSubSection>
 
-        <StyledSubSection title="autoplay 5s">
-          <Carousel carouselKey="autoplay-5s" autoplay={5000}>
+        <StyledSubSection title="multiple children">
+          <Carousel carouselKey="multiple">
             {Array4.map((count) => (
               <CarouselSampleSlide key={count} count={count} />
+            ))}
+            {Array4.map((count) => (
+              <CarouselSampleSlide key={count + 4} count={count + 4} />
             ))}
           </Carousel>
         </StyledSubSection>
@@ -35,13 +38,10 @@ function TopPage() {
           </Carousel>
         </StyledSubSection>
 
-        <StyledSubSection title="multiple children">
-          <Carousel carouselKey="multiple">
+        <StyledSubSection title="autoplay 5s">
+          <Carousel carouselKey="autoplay-5s" autoplay={5000}>
             {Array4.map((count) => (
               <CarouselSampleSlide key={count} count={count} />
-            ))}
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count + 4} count={count + 4} />
             ))}
           </Carousel>
         </StyledSubSection>
