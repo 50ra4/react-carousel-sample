@@ -27,9 +27,7 @@ export default {
 } as ComponentMeta<typeof Carousel>;
 
 const Item = ({ index }: { index: number }) => (
-  <CarouselSampleSlide even={index % 2 === 0}>
-    <span>{index + 1}</span>
-  </CarouselSampleSlide>
+  <CarouselSampleSlide count={index + 1} />
 );
 
 const children = Array.from({ length: 4 }).map((_, i) => (
