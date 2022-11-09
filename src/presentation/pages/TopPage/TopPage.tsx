@@ -17,49 +17,52 @@ const IMAGE_LIST = [
 function TopPage() {
   return (
     <Root>
-      <ResponsiveContainer>
-        <Title>Carousel Sample</Title>
-        <StyledSubSection title="basic">
-          <Carousel carouselKey="basic">
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count} count={count} />
-            ))}
-          </Carousel>
-        </StyledSubSection>
+      <Title>Carousel Sample</Title>
+      <Wrapper>
+        <ResponsiveContainer>
+          <StyledSubSection title="basic">
+            <Carousel carouselKey="basic">
+              {Array4.map((count) => (
+                <CarouselSampleSlide key={count} count={count} />
+              ))}
+            </Carousel>
+          </StyledSubSection>
 
-        <StyledSubSection title="autoplay 3s">
-          <Carousel carouselKey="autoplay-3s" autoplay={3000}>
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count} count={count} />
-            ))}
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count} count={count + 4} />
-            ))}
-          </Carousel>
-        </StyledSubSection>
+          <StyledSubSection title="autoplay 3s">
+            <Carousel carouselKey="autoplay-3s" autoplay={3000}>
+              {Array4.map((count) => (
+                <CarouselSampleSlide key={count} count={count} />
+              ))}
+              {Array4.map((count) => (
+                <CarouselSampleSlide key={count} count={count + 4} />
+              ))}
+            </Carousel>
+          </StyledSubSection>
 
-        <StyledSubSection title="autoplay 5s">
-          <Carousel carouselKey="autoplay-5s" autoplay={5000}>
-            {Array4.map((count) => (
-              <CarouselSampleSlide key={count} count={count} />
-            ))}
-          </Carousel>
-        </StyledSubSection>
+          <StyledSubSection title="autoplay 5s">
+            <Carousel carouselKey="autoplay-5s" autoplay={5000}>
+              {Array4.map((count) => (
+                <CarouselSampleSlide key={count} count={count} />
+              ))}
+            </Carousel>
+          </StyledSubSection>
 
-        <StyledSubSection title="images">
-          <Carousel carouselKey="images">
-            {IMAGE_LIST.map(({ src, caption }) => (
-              <Image key={src} src={src} caption={caption} />
-            ))}
-          </Carousel>
-        </StyledSubSection>
-      </ResponsiveContainer>
+          <StyledSubSection title="images">
+            <Carousel carouselKey="images">
+              {IMAGE_LIST.map(({ src, caption }) => (
+                <Image key={src} src={src} caption={caption} />
+              ))}
+            </Carousel>
+          </StyledSubSection>
+        </ResponsiveContainer>
+      </Wrapper>
     </Root>
   );
 }
 
 const Root = styled.main`
   background-color: #eee;
+  min-height: 100vh;
 `;
 
 const Title = styled.h2`
@@ -73,13 +76,25 @@ const Title = styled.h2`
 
 const StyledSubSection = styled(SubSection)`
   background-color: #fff;
-  margin-top: 8px;
+  width: 300px;
+`;
+
+const Wrapper = styled.div`
+  margin: 16px;
 `;
 
 const ResponsiveContainer = styled.div`
-  max-width: 400px;
-  @media (min-width: 400px) {
-    margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row;
+
+  padding: 0;
+  margin: 0 -8px -8px 0;
+
+  & > ${StyledSubSection} {
+    margin: 0 8px 8px 0;
   }
 `;
 

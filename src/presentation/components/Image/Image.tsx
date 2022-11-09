@@ -19,7 +19,7 @@ export function Image({
 
 const ImageWrapper = styled.div`
   position: relative;
-  height: 100%;
+  height: calc(100% - 2px);
   width: 100%;
 
   &:before {
