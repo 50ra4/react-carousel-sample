@@ -11,6 +11,7 @@ import { Image } from '@/components/Image/Image';
 
 const StyledWrapper = styled.div`
   max-width: 600px;
+  height: 450px;
 `;
 
 const withStyleWrapper: DecoratorFn = (Story, context) => {
@@ -26,12 +27,8 @@ export default {
   decorators: [withStyleWrapper],
 } as ComponentMeta<typeof Carousel>;
 
-const Item = ({ index }: { index: number }) => (
-  <CarouselSampleSlide count={index + 1} />
-);
-
 const children = Array.from({ length: 4 }).map((_, i) => (
-  <Item key={i} index={i} />
+  <CarouselSampleSlide key={i} count={i + 1} />
 ));
 
 export const Main: ComponentStoryObj<typeof Carousel> = {
@@ -52,7 +49,9 @@ export const AutoPlay: ComponentStoryObj<typeof Carousel> = {
 export const AdditionalChildren = () => (
   <Carousel carouselKey="carousel-additional-children">
     {children}
-    <Item index={children.length} />
+    {Array.from({ length: 4 }).map((_, i) => (
+      <CarouselSampleSlide key={i} count={i + 1 + 4} />
+    ))}
   </Carousel>
 );
 

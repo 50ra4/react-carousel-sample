@@ -212,7 +212,7 @@ const Slide = styled.li`
 
 const Root = styled.div`
   position: relative;
-  padding-top: 75%;
+  height: 100%;
 `;
 
 const Slider = styled.ol`
@@ -254,16 +254,14 @@ const IndicatorButton = styled.button<{ isActive?: boolean }>`
 `;
 
 const PreviewButton = styled(CircleTriangleButton)`
-  margin-top: 37.5%;
   transform: translateY(-50%);
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 8px;
 `;
 const NextButton = styled(CircleTriangleButton)`
-  margin-top: 37.5%;
   transform: translateY(-50%) rotate(180deg);
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 8px;
 `;
