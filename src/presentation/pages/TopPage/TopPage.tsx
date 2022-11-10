@@ -17,44 +17,46 @@ const IMAGE_LIST = [
 function TopPage() {
   return (
     <Root>
-      <Title>Carousel Sample</Title>
-      <FullWidthSubSection title="full width">
-        <FullWidthCarousel carouselKey="full-width">
-          {Array4.map((count) => (
-            <CarouselSampleSlide key={count} count={count} />
-          ))}
-        </FullWidthCarousel>
-      </FullWidthSubSection>
-      <Wrapper>
-        <SubSectionGroup>
-          <StyledSubSection title="autoplay 3s">
-            <StyledCarousel carouselKey="autoplay-3s" autoplay={3000}>
-              {Array4.map((count) => (
-                <CarouselSampleSlide key={count} count={count} />
-              ))}
-              {Array4.map((count) => (
-                <CarouselSampleSlide key={count} count={count + 4} />
-              ))}
-            </StyledCarousel>
-          </StyledSubSection>
+      <ResponsiveContainer>
+        <Title>React Carousel Sample</Title>
+        <FullWidthSubSection title="full width">
+          <FullWidthCarousel carouselKey="full-width">
+            {Array4.map((count) => (
+              <CarouselSampleSlide key={count} count={count} />
+            ))}
+          </FullWidthCarousel>
+        </FullWidthSubSection>
+        <Wrapper>
+          <SubSectionGroup>
+            <StyledSubSection title="autoplay 3s">
+              <StyledCarousel carouselKey="autoplay-3s" autoplay={3000}>
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count + 4} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
 
-          <StyledSubSection title="autoplay 5s">
-            <StyledCarousel carouselKey="autoplay-5s" autoplay={5000}>
-              {Array4.map((count) => (
-                <CarouselSampleSlide key={count} count={count} />
-              ))}
-            </StyledCarousel>
-          </StyledSubSection>
+            <StyledSubSection title="autoplay 5s">
+              <StyledCarousel carouselKey="autoplay-5s" autoplay={5000}>
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
 
-          <StyledSubSection title="images">
-            <StyledCarousel carouselKey="images">
-              {IMAGE_LIST.map(({ src, caption }) => (
-                <Picture key={src} src={src} caption={caption} />
-              ))}
-            </StyledCarousel>
-          </StyledSubSection>
-        </SubSectionGroup>
-      </Wrapper>
+            <StyledSubSection title="images">
+              <StyledCarousel carouselKey="images">
+                {IMAGE_LIST.map(({ src, caption }) => (
+                  <Picture key={src} src={src} caption={caption} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+          </SubSectionGroup>
+        </Wrapper>
+      </ResponsiveContainer>
     </Root>
   );
 }
@@ -62,6 +64,13 @@ function TopPage() {
 const Root = styled.main`
   background-color: #eee;
   min-height: 100vh;
+`;
+
+const ResponsiveContainer = styled.div`
+  max-width: 1280px;
+  @media (min-width: 1280px) {
+    margin: 0 auto;
+  }
 `;
 
 const Title = styled.h2`
@@ -87,7 +96,7 @@ const FullWidthCarousel = styled(Carousel)`
 `;
 
 const Wrapper = styled.div`
-  margin: 16px;
+  margin: 16px 0;
 `;
 
 const StyledCarousel = styled(Carousel)``;
@@ -104,6 +113,7 @@ const SubSectionGroup = styled.div`
 
   & > ${StyledSubSection} {
     margin: 0 8px 8px 0;
+
     & > ${StyledCarousel} {
       width: 300px;
       height: 225px;
