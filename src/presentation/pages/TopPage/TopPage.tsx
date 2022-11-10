@@ -18,41 +18,40 @@ function TopPage() {
   return (
     <Root>
       <Title>Carousel Sample</Title>
+      <FullWidthSubSection title="full width">
+        <FullWidthCarousel carouselKey="full-width">
+          {Array4.map((count) => (
+            <CarouselSampleSlide key={count} count={count} />
+          ))}
+        </FullWidthCarousel>
+      </FullWidthSubSection>
       <Wrapper>
         <SubSectionGroup>
-          <StyledSubSection title="basic">
-            <Carousel carouselKey="basic">
-              {Array4.map((count) => (
-                <CarouselSampleSlide key={count} count={count} />
-              ))}
-            </Carousel>
-          </StyledSubSection>
-
           <StyledSubSection title="autoplay 3s">
-            <Carousel carouselKey="autoplay-3s" autoplay={3000}>
+            <StyledCarousel carouselKey="autoplay-3s" autoplay={3000}>
               {Array4.map((count) => (
                 <CarouselSampleSlide key={count} count={count} />
               ))}
               {Array4.map((count) => (
                 <CarouselSampleSlide key={count} count={count + 4} />
               ))}
-            </Carousel>
+            </StyledCarousel>
           </StyledSubSection>
 
           <StyledSubSection title="autoplay 5s">
-            <Carousel carouselKey="autoplay-5s" autoplay={5000}>
+            <StyledCarousel carouselKey="autoplay-5s" autoplay={5000}>
               {Array4.map((count) => (
                 <CarouselSampleSlide key={count} count={count} />
               ))}
-            </Carousel>
+            </StyledCarousel>
           </StyledSubSection>
 
           <StyledSubSection title="images">
-            <Carousel carouselKey="images">
+            <StyledCarousel carouselKey="images">
               {IMAGE_LIST.map(({ src, caption }) => (
                 <Picture key={src} src={src} caption={caption} />
               ))}
-            </Carousel>
+            </StyledCarousel>
           </StyledSubSection>
         </SubSectionGroup>
       </Wrapper>
@@ -76,12 +75,22 @@ const Title = styled.h2`
 
 const StyledSubSection = styled(SubSection)`
   background-color: #fff;
-  width: 300px;
+`;
+
+const FullWidthSubSection = styled(StyledSubSection)`
+  margin: 16px 0;
+`;
+
+const FullWidthCarousel = styled(Carousel)`
+  width: 100%;
+  height: 300px;
 `;
 
 const Wrapper = styled.div`
   margin: 16px;
 `;
+
+const StyledCarousel = styled(Carousel)``;
 
 const SubSectionGroup = styled.div`
   display: flex;
@@ -95,6 +104,10 @@ const SubSectionGroup = styled.div`
 
   & > ${StyledSubSection} {
     margin: 0 8px 8px 0;
+    & > ${StyledCarousel} {
+      width: 300px;
+      height: 225px;
+    }
   }
 `;
 
