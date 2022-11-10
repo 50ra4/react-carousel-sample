@@ -176,7 +176,7 @@ export function Carousel({
         ))}
       </Slider>
       <Indicator>
-        <IndicatorList className={className}>
+        <IndicatorList>
           {slides.map(({ slideId }, i) => (
             <IndicatorItem key={slideId}>
               <IndicatorButton
@@ -233,6 +233,7 @@ const Indicator = styled.div`
   bottom: 0;
   left: 0;
   text-align: center;
+  transform: translateY(-24px);
 `;
 const IndicatorList = styled.ol`
   display: inline-block;
@@ -248,7 +249,7 @@ const IndicatorButton = styled.button<{ isActive?: boolean }>`
   background-color: ${({ isActive }) => (isActive ? '#ffe' : '#333')};
   border-radius: 50%;
   border: none;
-  margin: 0 4px 24px;
+  margin: 0 4px;
   font-size: 0;
   transition: transform 0.1s;
 `;
