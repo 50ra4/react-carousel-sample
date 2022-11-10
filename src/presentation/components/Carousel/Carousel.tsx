@@ -176,7 +176,7 @@ export function Carousel({
         ))}
       </Slider>
       <Indicator>
-        <IndicatorList className={className}>
+        <IndicatorList>
           {slides.map(({ slideId }, i) => (
             <IndicatorItem key={slideId}>
               <IndicatorButton
@@ -212,9 +212,7 @@ const Slide = styled.li`
 
 const Root = styled.div`
   position: relative;
-  padding-top: 75%;
-  filter: drop-shadow(0 0 10px #0003);
-  perspective: 100px;
+  height: 100%;
 `;
 
 const Slider = styled.ol`
@@ -235,6 +233,7 @@ const Indicator = styled.div`
   bottom: 0;
   left: 0;
   text-align: center;
+  transform: translateY(-24px);
 `;
 const IndicatorList = styled.ol`
   display: inline-block;
@@ -250,22 +249,20 @@ const IndicatorButton = styled.button<{ isActive?: boolean }>`
   background-color: ${({ isActive }) => (isActive ? '#ffe' : '#333')};
   border-radius: 50%;
   border: none;
-  margin: 0 4px 24px;
+  margin: 0 4px;
   font-size: 0;
   transition: transform 0.1s;
 `;
 
 const PreviewButton = styled(CircleTriangleButton)`
-  margin-top: 37.5%;
   transform: translateY(-50%);
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 8px;
 `;
 const NextButton = styled(CircleTriangleButton)`
-  margin-top: 37.5%;
   transform: translateY(-50%) rotate(180deg);
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 8px;
 `;
