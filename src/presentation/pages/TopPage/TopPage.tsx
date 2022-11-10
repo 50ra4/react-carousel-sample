@@ -19,7 +19,7 @@ function TopPage() {
     <Root>
       <Title>Carousel Sample</Title>
       <Wrapper>
-        <ResponsiveContainer>
+        <SubSectionGroup>
           <StyledSubSection title="basic">
             <Carousel carouselKey="basic">
               {Array4.map((count) => (
@@ -54,7 +54,7 @@ function TopPage() {
               ))}
             </Carousel>
           </StyledSubSection>
-        </ResponsiveContainer>
+        </SubSectionGroup>
       </Wrapper>
     </Root>
   );
@@ -83,7 +83,7 @@ const Wrapper = styled.div`
   margin: 16px;
 `;
 
-const ResponsiveContainer = styled.div`
+const SubSectionGroup = styled.div`
   display: flex;
   justify-content: flex-start;
   align-content: flex-start;
