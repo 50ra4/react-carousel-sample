@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export function Image({
+export function Picture({
   className,
   src,
   caption,

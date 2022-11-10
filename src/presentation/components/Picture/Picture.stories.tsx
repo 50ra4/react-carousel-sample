@@ -5,7 +5,7 @@ import {
 } from '@storybook/react';
 import React from 'react';
 import styled from 'styled-components';
-import { Image } from './Image';
+import { Picture } from './Picture';
 
 const StyledWrapper = styled.div`
   max-width: 300px;
@@ -21,29 +21,29 @@ const withStyleWrapper: DecoratorFn = (Story, context) => {
 };
 
 export default {
-  component: Image,
+  component: Picture,
   decorators: [withStyleWrapper],
-} as ComponentMeta<typeof Image>;
+} as ComponentMeta<typeof Picture>;
 
-const args: React.ComponentProps<typeof Image> = {
+const args: React.ComponentProps<typeof Picture> = {
   src: 'images/sky_00009.jpg',
   caption: 'sky image',
 };
 
-export const Main: ComponentStoryObj<typeof Image> = {
+export const Main: ComponentStoryObj<typeof Picture> = {
   args: {
     ...args,
   },
 };
 
-const LetterBox = styled(Image)`
+const LetterBox = styled(Picture)`
   width: 300px;
   height: 225px;
 `;
 
 export const LetterBoxImage = () => <LetterBox {...args} />;
 
-const PillarBox = styled(Image)`
+const PillarBox = styled(Picture)`
   width: 400px;
   height: 200px;
 `;

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Carousel } from '@/components/Carousel/Carousel';
 import { CarouselSampleSlide } from '@/components/Carousel/CarouselSampleSlide';
-import { Image } from '@/components/Image/Image';
+import { Picture } from '@/components/Picture/Picture';
 import { SubSection } from '@/components/SubSection/SubSection';
 
 const Array4 = Array.from({ length: 4 }).map((_, i) => i + 1);
@@ -50,7 +50,7 @@ function TopPage() {
           <StyledSubSection title="images">
             <Carousel carouselKey="images">
               {IMAGE_LIST.map(({ src, caption }) => (
-                <Image key={src} src={src} caption={caption} />
+                <Picture key={src} src={src} caption={caption} />
               ))}
             </Carousel>
           </StyledSubSection>

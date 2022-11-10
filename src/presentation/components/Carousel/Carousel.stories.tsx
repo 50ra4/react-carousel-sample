@@ -7,7 +7,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { CarouselSampleSlide } from './CarouselSampleSlide';
 import { Carousel } from '@/components/Carousel/Carousel';
-import { Image } from '@/components/Image/Image';
+import { Picture } from '@/components/Picture/Picture';
 
 const StyledWrapper = styled.div`
   max-width: 600px;
@@ -63,10 +63,10 @@ const IMAGE_LIST = [
   { src: 'images/sky_00200.jpg', caption: 'sky_00200' },
 ];
 
-export const ImageCarousel = () => (
-  <Carousel carouselKey="carousel-image">
+export const PictureCarousel = () => (
+  <Carousel carouselKey="carousel-picture">
     {IMAGE_LIST.map(({ src, caption }) => (
-      <Image key={src} src={src} caption={caption} />
+      <Picture key={src} src={src} caption={caption} />
     ))}
   </Carousel>
 );
