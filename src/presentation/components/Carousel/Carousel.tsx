@@ -213,8 +213,6 @@ const Slide = styled.li`
 const Root = styled.div`
   position: relative;
   padding-top: 75%;
-  filter: drop-shadow(0 0 10px #0003);
-  perspective: 100px;
 `;
 
 const Slider = styled.ol`
