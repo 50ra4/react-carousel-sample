@@ -150,15 +150,13 @@ export function Carousel({
           <Slide key={slideId} id={slideId}>
             {child}
             <Snapper />
-            <PreviewButton onClick={scrollToPreviousSlide}>
-              Go to previous slide
-            </PreviewButton>
-            <NextButton onClick={scrollToNextSlide}>
-              Go to next slide
-            </NextButton>
           </Slide>
         ))}
       </Slider>
+      <PreviewButton onClick={scrollToPreviousSlide}>
+        Go to previous slide
+      </PreviewButton>
+      <NextButton onClick={scrollToNextSlide}>Go to next slide</NextButton>
       <Indicator>
         <IndicatorList>
           {slides.map(({ slideId }, i) => (
