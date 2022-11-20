@@ -25,12 +25,6 @@ const createSlideId = (carouselKey: string, index: number) =>
 const slideId2SlideIndex = (slideId: string): number =>
   +slideId.slice(slideId.lastIndexOf('_') + 1);
 
-const getNextSlideIndex = (length: number, currentIndex: number) =>
-  currentIndex === length - 1 ? 0 : currentIndex + 1;
-
-const getPrevSlideIndex = (length: number, currentIndex: number) =>
-  currentIndex === 0 ? length - 1 : currentIndex - 1;
-
 export function Carousel({
   className,
   carouselKey,
@@ -74,6 +68,18 @@ export function Carousel({
       })),
     [carouselKey, children],
   );
+
+  const scrollToPreviousSlide = useCallback(() => {
+    const targetIndex =
+      currentSlideIndex === 0 ? slides.length - 1 : currentSlideIndex - 1;
+    scrollToSlide(targetIndex);
+  }, [currentSlideIndex, scrollToSlide, slides.length]);
+
+  const scrollToNextSlide = useCallback(() => {
+    const targetIndex =
+      currentSlideIndex === slides.length - 1 ? 0 : currentSlideIndex + 1;
+    scrollToSlide(targetIndex);
+  }, [currentSlideIndex, scrollToSlide, slides.length]);
 
   useEffect(() => {
     if (!sliderRef.current) {
@@ -121,18 +127,13 @@ export function Carousel({
     }
 
     const timer = setInterval(() => {
-      const nextSlideIndex = getNextSlideIndex(
-        slides.length,
-        currentSlideIndex,
-      );
-
-      scrollToSlide(nextSlideIndex);
+      scrollToNextSlide();
     }, autoplay);
 
     return () => {
       clearInterval(timer);
     };
-  }, [autoplay, currentSlideIndex, isHover, scrollToSlide, slides.length]);
+  }, [autoplay, isHover, scrollToNextSlide]);
 
   return (
     <Root
@@ -145,22 +146,14 @@ export function Carousel({
       }}
     >
       <Slider ref={sliderRef}>
-        {slides.map(({ slideId, child }, i) => (
+        {slides.map(({ slideId, child }) => (
           <Slide key={slideId} id={slideId}>
             {child}
             <Snapper />
-            <PreviewButton
-              onClick={() => {
-                scrollToSlide(getPrevSlideIndex(slides.length, i));
-              }}
-            >
+            <PreviewButton onClick={scrollToPreviousSlide}>
               Go to previous slide
             </PreviewButton>
-            <NextButton
-              onClick={() => {
-                scrollToSlide(getNextSlideIndex(slides.length, i));
-              }}
-            >
+            <NextButton onClick={scrollToNextSlide}>
               Go to next slide
             </NextButton>
           </Slide>
