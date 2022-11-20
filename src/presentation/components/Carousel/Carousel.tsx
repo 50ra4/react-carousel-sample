@@ -22,6 +22,9 @@ export type CarouselProps = CarouselOptions & {
 const createSlideId = (carouselKey: string, index: number) =>
   `${carouselKey}_${index}`;
 
+const slideId2SlideIndex = (slideId: string): number =>
+  +slideId.slice(slideId.lastIndexOf('_') + 1);
+
 const getNextSlideIndex = (length: number, currentIndex: number) =>
   currentIndex === length - 1 ? 0 : currentIndex + 1;
 
@@ -34,29 +37,34 @@ export function Carousel({
   autoplay,
   children,
 }: CarouselProps) {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<HTMLOListElement | null>(null);
 
-  const scrollToSlide = useCallback((id: string) => {
-    const sliderElement = sliderRef.current;
-    if (!sliderElement) {
-      return;
-    }
+  const scrollToSlide = useCallback(
+    (index: number) => {
+      const sliderElement = sliderRef.current;
+      if (!sliderElement) {
+        return;
+      }
 
-    const targetElement: HTMLElement | null = sliderElement.querySelector(
-      `#${id}`,
-    );
-    if (!targetElement) {
-      return;
-    }
+      const id = createSlideId(carouselKey, index);
+      const targetElement: HTMLElement | null = sliderElement.querySelector(
+        `#${id}`,
+      );
+      if (!targetElement) {
+        return;
+      }
 
-    const scrollX = sliderElement.scrollLeft;
-    const sliderPosition = sliderElement.getBoundingClientRect().left;
-    const targetPosition = targetElement.getBoundingClientRect().left;
+      const scrollX = sliderElement.scrollLeft;
+      const sliderPosition = sliderElement.getBoundingClientRect().left;
+      const targetPosition = targetElement.getBoundingClientRect().left;
 
-    sliderElement.scrollTo({
-      left: scrollX + targetPosition - sliderPosition,
-    });
-  }, []);
+      sliderElement.scrollTo({
+        left: scrollX + targetPosition - sliderPosition,
+      });
+    },
+    [carouselKey],
+  );
 
   const slides = useMemo(
     () =>
@@ -66,8 +74,6 @@ export function Carousel({
       })),
     [carouselKey, children],
   );
-
-  const [currentSlideId, setCurrentSlideId] = useState(slides[0].slideId);
 
   useEffect(() => {
     if (!sliderRef.current) {
@@ -79,7 +85,7 @@ export function Carousel({
         if (!entry.isIntersecting) {
           return;
         }
-        setCurrentSlideId(entry.target.id);
+        setCurrentSlideIndex(slideId2SlideIndex(entry.target.id));
       });
     };
 
@@ -101,7 +107,7 @@ export function Carousel({
         observer.unobserve(elm);
       });
     };
-  }, [carouselKey, slides]);
+  }, [slides]);
 
   const [isHover, setIsHover] = useState(false);
 
@@ -114,26 +120,19 @@ export function Carousel({
       return;
     }
 
-    const currentSlideIndex = slides.findIndex(
-      (slide) => slide.slideId === currentSlideId,
-    );
-    if (currentSlideIndex < 0) {
-      return;
-    }
-
     const timer = setInterval(() => {
-      const nextSlideId = createSlideId(
-        carouselKey,
-        getNextSlideIndex(slides.length, currentSlideIndex),
+      const nextSlideIndex = getNextSlideIndex(
+        slides.length,
+        currentSlideIndex,
       );
 
-      scrollToSlide(nextSlideId);
+      scrollToSlide(nextSlideIndex);
     }, autoplay);
 
     return () => {
       clearInterval(timer);
     };
-  }, [autoplay, carouselKey, currentSlideId, isHover, scrollToSlide, slides]);
+  }, [autoplay, currentSlideIndex, isHover, scrollToSlide, slides.length]);
 
   return (
     <Root
@@ -152,22 +151,14 @@ export function Carousel({
             <Snapper />
             <PreviewButton
               onClick={() => {
-                const targetId = createSlideId(
-                  carouselKey,
-                  getPrevSlideIndex(slides.length, i),
-                );
-                scrollToSlide(targetId);
+                scrollToSlide(getPrevSlideIndex(slides.length, i));
               }}
             >
               Go to previous slide
             </PreviewButton>
             <NextButton
               onClick={() => {
-                const targetId = createSlideId(
-                  carouselKey,
-                  getNextSlideIndex(slides.length, i),
-                );
-                scrollToSlide(targetId);
+                scrollToSlide(getNextSlideIndex(slides.length, i));
               }}
             >
               Go to next slide
@@ -180,9 +171,9 @@ export function Carousel({
           {slides.map(({ slideId }, i) => (
             <IndicatorItem key={slideId}>
               <IndicatorButton
-                isActive={currentSlideId === slideId}
+                isActive={currentSlideIndex === i}
                 onClick={() => {
-                  scrollToSlide(slideId);
+                  scrollToSlide(i);
                 }}
               >
                 Go to {i + 1} slide
