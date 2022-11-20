@@ -7,10 +7,12 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
+import { useContentWidth } from 'src/hooks/useContentWidth';
 
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
+  perView?: number;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -29,10 +31,13 @@ export function Carousel({
   className,
   carouselKey,
   autoplay,
+  perView,
   children,
 }: CarouselProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<HTMLOListElement | null>(null);
+  const sliderWidth = useContentWidth(sliderRef);
+  const [slideWidth, setSlideWidth] = useState<number | null>(sliderWidth);
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -135,6 +140,22 @@ export function Carousel({
     };
   }, [autoplay, isHover, scrollToNextSlide]);
 
+  useEffect(() => {
+    if (!perView) {
+      return;
+    }
+    if (perView < 1) {
+      throw new Error('perView must be 1 or more.');
+    }
+    if (!sliderWidth) {
+      return;
+    }
+
+    const width = sliderWidth / perView;
+    console.log(width);
+    setSlideWidth(width);
+  }, [perView, sliderWidth]);
+
   return (
     <Root
       className={className}
@@ -147,7 +168,7 @@ export function Carousel({
     >
       <Slider ref={sliderRef}>
         {slides.map(({ slideId, child }) => (
-          <Slide key={slideId} id={slideId}>
+          <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
             {child}
             <Snapper />
           </Slide>
@@ -186,10 +207,10 @@ const Snapper = styled.div`
   scroll-snap-align: center;
 `;
 
-const Slide = styled.li`
+const Slide = styled.li<{ width?: number }>`
   position: relative;
-  flex: 0 0 100%;
-  width: 100%;
+  flex: 0 0 auto;
+  width: ${({ width }) => (width ? `${width}px` : '100%')};
 `;
 
 const Root = styled.div`
@@ -198,11 +219,7 @@ const Root = styled.div`
 `;
 
 const Slider = styled.ol`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  height: 100%;
   display: flex;
   overflow-x: scroll;
   scroll-behavior: smooth;
