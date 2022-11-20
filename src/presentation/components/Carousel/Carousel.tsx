@@ -22,11 +22,8 @@ export type CarouselProps = CarouselOptions & {
 const createSlideId = (carouselKey: string, index: number) =>
   `${carouselKey}_${index}`;
 
-const getNextSlideIndex = (length: number, currentIndex: number) =>
-  currentIndex === length - 1 ? 0 : currentIndex + 1;
-
-const getPrevSlideIndex = (length: number, currentIndex: number) =>
-  currentIndex === 0 ? length - 1 : currentIndex - 1;
+const slideId2SlideIndex = (slideId: string): number =>
+  +slideId.slice(slideId.lastIndexOf('_') + 1);
 
 export function Carousel({
   className,
@@ -34,29 +31,34 @@ export function Carousel({
   autoplay,
   children,
 }: CarouselProps) {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<HTMLOListElement | null>(null);
 
-  const scrollToSlide = useCallback((id: string) => {
-    const sliderElement = sliderRef.current;
-    if (!sliderElement) {
-      return;
-    }
+  const scrollToSlide = useCallback(
+    (index: number) => {
+      const sliderElement = sliderRef.current;
+      if (!sliderElement) {
+        return;
+      }
 
-    const targetElement: HTMLElement | null = sliderElement.querySelector(
-      `#${id}`,
-    );
-    if (!targetElement) {
-      return;
-    }
+      const id = createSlideId(carouselKey, index);
+      const targetElement: HTMLElement | null = sliderElement.querySelector(
+        `#${id}`,
+      );
+      if (!targetElement) {
+        return;
+      }
 
-    const scrollX = sliderElement.scrollLeft;
-    const sliderPosition = sliderElement.getBoundingClientRect().left;
-    const targetPosition = targetElement.getBoundingClientRect().left;
+      const scrollX = sliderElement.scrollLeft;
+      const sliderPosition = sliderElement.getBoundingClientRect().left;
+      const targetPosition = targetElement.getBoundingClientRect().left;
 
-    sliderElement.scrollTo({
-      left: scrollX + targetPosition - sliderPosition,
-    });
-  }, []);
+      sliderElement.scrollTo({
+        left: scrollX + targetPosition - sliderPosition,
+      });
+    },
+    [carouselKey],
+  );
 
   const slides = useMemo(
     () =>
@@ -67,7 +69,17 @@ export function Carousel({
     [carouselKey, children],
   );
 
-  const [currentSlideId, setCurrentSlideId] = useState(slides[0].slideId);
+  const scrollToPreviousSlide = useCallback(() => {
+    const targetIndex =
+      currentSlideIndex === 0 ? slides.length - 1 : currentSlideIndex - 1;
+    scrollToSlide(targetIndex);
+  }, [currentSlideIndex, scrollToSlide, slides.length]);
+
+  const scrollToNextSlide = useCallback(() => {
+    const targetIndex =
+      currentSlideIndex === slides.length - 1 ? 0 : currentSlideIndex + 1;
+    scrollToSlide(targetIndex);
+  }, [currentSlideIndex, scrollToSlide, slides.length]);
 
   useEffect(() => {
     if (!sliderRef.current) {
@@ -79,7 +91,7 @@ export function Carousel({
         if (!entry.isIntersecting) {
           return;
         }
-        setCurrentSlideId(entry.target.id);
+        setCurrentSlideIndex(slideId2SlideIndex(entry.target.id));
       });
     };
 
@@ -101,7 +113,7 @@ export function Carousel({
         observer.unobserve(elm);
       });
     };
-  }, [carouselKey, slides]);
+  }, [slides]);
 
   const [isHover, setIsHover] = useState(false);
 
@@ -114,26 +126,14 @@ export function Carousel({
       return;
     }
 
-    const currentSlideIndex = slides.findIndex(
-      (slide) => slide.slideId === currentSlideId,
-    );
-    if (currentSlideIndex < 0) {
-      return;
-    }
-
     const timer = setInterval(() => {
-      const nextSlideId = createSlideId(
-        carouselKey,
-        getNextSlideIndex(slides.length, currentSlideIndex),
-      );
-
-      scrollToSlide(nextSlideId);
+      scrollToNextSlide();
     }, autoplay);
 
     return () => {
       clearInterval(timer);
     };
-  }, [autoplay, carouselKey, currentSlideId, isHover, scrollToSlide, slides]);
+  }, [autoplay, isHover, scrollToNextSlide]);
 
   return (
     <Root
@@ -146,43 +146,25 @@ export function Carousel({
       }}
     >
       <Slider ref={sliderRef}>
-        {slides.map(({ slideId, child }, i) => (
+        {slides.map(({ slideId, child }) => (
           <Slide key={slideId} id={slideId}>
             {child}
             <Snapper />
-            <PreviewButton
-              onClick={() => {
-                const targetId = createSlideId(
-                  carouselKey,
-                  getPrevSlideIndex(slides.length, i),
-                );
-                scrollToSlide(targetId);
-              }}
-            >
-              Go to previous slide
-            </PreviewButton>
-            <NextButton
-              onClick={() => {
-                const targetId = createSlideId(
-                  carouselKey,
-                  getNextSlideIndex(slides.length, i),
-                );
-                scrollToSlide(targetId);
-              }}
-            >
-              Go to next slide
-            </NextButton>
           </Slide>
         ))}
       </Slider>
+      <PreviewButton onClick={scrollToPreviousSlide}>
+        Go to previous slide
+      </PreviewButton>
+      <NextButton onClick={scrollToNextSlide}>Go to next slide</NextButton>
       <Indicator>
         <IndicatorList>
           {slides.map(({ slideId }, i) => (
             <IndicatorItem key={slideId}>
               <IndicatorButton
-                isActive={currentSlideId === slideId}
+                isActive={currentSlideIndex === i}
                 onClick={() => {
-                  scrollToSlide(slideId);
+                  scrollToSlide(i);
                 }}
               >
                 Go to {i + 1} slide
