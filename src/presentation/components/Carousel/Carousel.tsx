@@ -69,6 +69,8 @@ export type CarouselOptions = {
   peek?: Peek;
   /** Start at specific slide number. default: 0 */
   startAt?: number;
+  /** allow looping. default: true */
+  rewind?: boolean;
 
   /** hide Indicator. default: false */
   disabledIndicator?: boolean;
@@ -156,6 +158,7 @@ export function Carousel({
   gap = 0,
   peek: peekOption,
   startAt,
+  rewind = true,
   disabledIndicator,
   disabledSideNavigation: disabledSideNavigationOption,
   children,
@@ -220,17 +223,23 @@ export function Carousel({
     total: slides.length,
   });
 
-  const scrollToPreviousSlide = useCallback(() => {
-    const targetIndex =
-      currentSlideIndex === 0 ? slides.length - 1 : currentSlideIndex - 1;
-    scrollToSlide(targetIndex);
-  }, [currentSlideIndex, scrollToSlide, slides.length]);
+  const isDisplayedFirstSlide = currentSlideIndex === 0;
+  const canScrollToPrevious = rewind || !isDisplayedFirstSlide;
+  const previousSlideIndex = isDisplayedFirstSlide
+    ? slides.length - 1
+    : currentSlideIndex - 1;
 
-  const scrollToNextSlide = useCallback(() => {
-    const targetIndex =
-      currentSlideIndex === slides.length - 1 ? 0 : currentSlideIndex + 1;
-    scrollToSlide(targetIndex);
-  }, [currentSlideIndex, scrollToSlide, slides.length]);
+  const isDisplayedLastSlide = currentSlideIndex === slides.length - 1;
+  const canScrollToNext = rewind || !isDisplayedLastSlide;
+  const nextSlideIndex = isDisplayedLastSlide ? 0 : currentSlideIndex + 1;
+
+  const scrollToPrevious = useCallback(() => {
+    scrollToSlide(previousSlideIndex);
+  }, [previousSlideIndex, scrollToSlide]);
+
+  const scrollToNext = useCallback(() => {
+    scrollToSlide(nextSlideIndex);
+  }, [nextSlideIndex, scrollToSlide]);
 
   useEffect(() => {
     if (!autoplay) {
@@ -241,14 +250,18 @@ export function Carousel({
       return;
     }
 
+    if (!canScrollToNext) {
+      return;
+    }
+
     const timer = setInterval(() => {
-      scrollToNextSlide();
+      scrollToNext();
     }, autoplay);
 
     return () => {
       clearInterval(timer);
     };
-  }, [autoplay, isHover, scrollToNextSlide]);
+  }, [autoplay, canScrollToNext, isHover, scrollToNext]);
 
   useEffect(() => {
     if (!perView) {
@@ -299,13 +312,13 @@ export function Carousel({
           <SliderPadding inserted={sliderPaddingRight} />
         )}
       </Slider>
-      {!disabledSideNavigation.previous && (
-        <PreviewButton onClick={scrollToPreviousSlide}>
+      {!disabledSideNavigation.previous && canScrollToPrevious && (
+        <PreviewButton onClick={scrollToPrevious}>
           Go to previous slide
         </PreviewButton>
       )}
-      {!disabledSideNavigation.next && (
-        <NextButton onClick={scrollToNextSlide}>Go to next slide</NextButton>
+      {!disabledSideNavigation.next && canScrollToNext && (
+        <NextButton onClick={scrollToNext}>Go to next slide</NextButton>
       )}
       {!disabledIndicator && (
         <Indicator>
