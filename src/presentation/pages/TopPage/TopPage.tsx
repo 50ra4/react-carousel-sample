@@ -205,6 +205,19 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="bound">
+              <StyledCarousel
+                carouselKey="bound"
+                perView={3}
+                gap={1}
+                bound={true}
+              >
+                {Array8.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
