@@ -9,6 +9,28 @@ import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 import { useContentWidth } from 'src/hooks/useContentWidth';
 
+type PeekObject = { before: number; after: number };
+type Peek = number | Partial<PeekObject>;
+
+const persePeek = (peek?: Peek): PeekObject => {
+  if (typeof peek === 'object') {
+    return {
+      before: peek.before ?? 0,
+      after: peek.after ?? 0,
+    };
+  }
+  if (typeof peek === 'number') {
+    return {
+      before: peek,
+      after: peek,
+    };
+  }
+  return {
+    before: 0,
+    after: 0,
+  };
+};
+
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
@@ -16,6 +38,8 @@ export type CarouselOptions = {
   perView?: number;
   /** add margin between slides. But 0 when perView is 1. default: 0 */
   gap?: number;
+  /** The distance value of the next and previous slider which have to peek in the current view. default: 0 */
+  peek?: Peek;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -91,8 +115,10 @@ export function Carousel({
   autoplay,
   perView,
   gap = 0,
+  peek: _peek,
   children,
 }: CarouselProps) {
+  const peek = useMemo(() => persePeek(_peek), [_peek]);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
   const [{ slideWidth, sliderPaddingRight, gapWidth }, setSliderOption] =
@@ -208,7 +234,7 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider ref={sliderRef} gapWidth={gapWidth}>
+      <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
           <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
             {child}
@@ -268,7 +294,9 @@ const Root = styled.div`
   height: 100%;
 `;
 
-const Slider = styled.ol<{ gapWidth: number }>`
+type SliderProps = { peek: PeekObject; gapWidth: number };
+
+const Slider = styled.ol<SliderProps>`
   height: 100%;
   display: flex;
   overflow-x: scroll;
@@ -276,8 +304,13 @@ const Slider = styled.ol<{ gapWidth: number }>`
   scroll-snap-type: x mandatory;
 
   & > ${Slide} + ${Slide} {
-    margin-left: ${({ gapWidth }) => (gapWidth ? gapWidth : 0)}px;
+    margin-left: ${({ gapWidth }) => gapWidth ?? 0}px;
   }
+
+  scroll-padding: ${({ peek: { before, after } }) =>
+    !before && !after ? '0' : `0 ${after}px 0 ${before}px`};
+  padding: ${({ peek: { before, after } }) =>
+    !before && !after ? '0' : `0 ${after}px 0 ${before}px`};
 `;
 
 const Indicator = styled.div`
