@@ -7,10 +7,12 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
+import { useContentWidth } from 'src/hooks/useContentWidth';
 
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
+  perView?: number;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -25,14 +27,73 @@ const createSlideId = (carouselKey: string, index: number) =>
 const slideId2SlideIndex = (slideId: string): number =>
   +slideId.slice(slideId.lastIndexOf('_') + 1);
 
+function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
+  ref: React.RefObject<T | null>,
+  { total, carouselKey }: { total: number; carouselKey: string },
+) {
+  const [visibleIndexes, setVisibleIndexes] = useState<Set<number>>(new Set());
+  const currentSlideIndex = Math.min(...Array.from(visibleIndexes));
+
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    const callback: IntersectionObserverCallback = (entries) => {
+      setVisibleIndexes((prev) => {
+        // TODO: check changes from last time and then update
+        const updated = new Set(prev);
+
+        entries.forEach((entry) => {
+          const index = slideId2SlideIndex(entry.target.id);
+          if (entry.intersectionRatio > 0.9) {
+            updated.add(index);
+          } else {
+            updated.delete(index);
+          }
+        });
+
+        return updated;
+      });
+    };
+
+    const observer = new IntersectionObserver(callback, {
+      root: ref.current,
+      threshold: [0, 0.9, 1],
+    });
+
+    const elements = Array.from({ length: total })
+      .map((_, i) =>
+        document.querySelector(`#${createSlideId(carouselKey, i)}`),
+      )
+      .filter((v): v is NonNullable<typeof v> => !!v);
+
+    elements.forEach((elm) => {
+      observer.observe(elm);
+    });
+
+    return () => {
+      elements.forEach((elm) => {
+        observer.unobserve(elm);
+      });
+    };
+  }, [carouselKey, total, ref]);
+
+  return currentSlideIndex;
+}
+
 export function Carousel({
   className,
   carouselKey,
   autoplay,
+  perView,
   children,
 }: CarouselProps) {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<HTMLOListElement | null>(null);
+  const sliderWidth = useContentWidth(sliderRef);
+  const [slideWidth, setSlideWidth] = useState<number | null>(null);
+  const [sliderPaddingRight, setSliderPaddingRight] = useState(0);
+  const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -69,6 +130,11 @@ export function Carousel({
     [carouselKey, children],
   );
 
+  const currentSlideIndex = useCurrentSlideIndex(sliderRef, {
+    carouselKey,
+    total: slides.length,
+  });
+
   const scrollToPreviousSlide = useCallback(() => {
     const targetIndex =
       currentSlideIndex === 0 ? slides.length - 1 : currentSlideIndex - 1;
@@ -80,42 +146,6 @@ export function Carousel({
       currentSlideIndex === slides.length - 1 ? 0 : currentSlideIndex + 1;
     scrollToSlide(targetIndex);
   }, [currentSlideIndex, scrollToSlide, slides.length]);
-
-  useEffect(() => {
-    if (!sliderRef.current) {
-      return;
-    }
-
-    const callback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          return;
-        }
-        setCurrentSlideIndex(slideId2SlideIndex(entry.target.id));
-      });
-    };
-
-    const observer = new IntersectionObserver(callback, {
-      root: sliderRef.current,
-      threshold: 1,
-    });
-
-    const elements = slides
-      .map(({ slideId }) => document.querySelector(`#${slideId}`))
-      .filter((v): v is NonNullable<typeof v> => !!v);
-
-    elements.forEach((elm) => {
-      observer.observe(elm);
-    });
-
-    return () => {
-      elements.forEach((elm) => {
-        observer.unobserve(elm);
-      });
-    };
-  }, [slides]);
-
-  const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
     if (!autoplay) {
@@ -135,6 +165,23 @@ export function Carousel({
     };
   }, [autoplay, isHover, scrollToNextSlide]);
 
+  useEffect(() => {
+    if (!perView) {
+      return;
+    }
+    if (perView < 1) {
+      throw new Error('perView must be 1 or more.');
+    }
+    if (!sliderWidth) {
+      return;
+    }
+
+    // TODO: use useReducer？
+    const perWidth = sliderWidth / perView;
+    setSlideWidth(perWidth);
+    setSliderPaddingRight((perView - 1) * sliderWidth);
+  }, [perView, sliderWidth]);
+
   return (
     <Root
       className={className}
@@ -147,11 +194,14 @@ export function Carousel({
     >
       <Slider ref={sliderRef}>
         {slides.map(({ slideId, child }) => (
-          <Slide key={slideId} id={slideId}>
+          <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
             {child}
-            <Snapper />
+            <Snapper multipleSlide={!!perView && perView > 1} />
           </Slide>
         ))}
+        {!!sliderPaddingRight && (
+          <SliderPadding inserted={sliderPaddingRight} />
+        )}
       </Slider>
       <PreviewButton onClick={scrollToPreviousSlide}>
         Go to previous slide
@@ -177,19 +227,24 @@ export function Carousel({
   );
 }
 
-const Snapper = styled.div`
+const SliderPadding = styled.div<{ inserted: number }>`
+  padding-left: ${({ inserted }) => inserted}px;
+`;
+
+const Snapper = styled.div<{ multipleSlide?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  scroll-snap-align: center;
+  scroll-snap-align: ${({ multipleSlide }) =>
+    multipleSlide ? 'start' : 'center'};
 `;
 
-const Slide = styled.li`
+const Slide = styled.li<{ width?: number }>`
   position: relative;
-  flex: 0 0 100%;
-  width: 100%;
+  flex: 0 0 auto;
+  width: ${({ width }) => (width ? `${width}px` : '100%')};
 `;
 
 const Root = styled.div`
@@ -198,11 +253,7 @@ const Root = styled.div`
 `;
 
 const Slider = styled.ol`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  height: 100%;
   display: flex;
   overflow-x: scroll;
   scroll-behavior: smooth;
