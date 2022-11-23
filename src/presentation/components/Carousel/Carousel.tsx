@@ -29,13 +29,10 @@ const slideId2SlideIndex = (slideId: string): number =>
 
 function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
   ref: React.RefObject<T | null>,
-  {
-    total,
-    carouselKey,
-    initial = 0,
-  }: { total: number; carouselKey: string; initial?: number },
+  { total, carouselKey }: { total: number; carouselKey: string },
 ) {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(initial);
+  const [visibleIndexes, setVisibleIndexes] = useState<Set<number>>(new Set());
+  const currentSlideIndex = Math.min(...Array.from(visibleIndexes));
 
   useEffect(() => {
     if (!ref.current) {
@@ -43,21 +40,25 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
     }
 
     const callback: IntersectionObserverCallback = (entries) => {
-      const targetIndexes = entries
-        .filter((entry) => entry.isIntersecting)
-        .map((entry) => slideId2SlideIndex(entry.target.id));
+      setVisibleIndexes((prev) => {
+        const updated = new Set(prev);
 
-      if (!targetIndexes.length) {
-        return;
-      }
+        entries.forEach((entry) => {
+          const index = slideId2SlideIndex(entry.target.id);
+          if (entry.intersectionRatio > 0.9) {
+            updated.add(index);
+          } else {
+            updated.delete(index);
+          }
+        });
 
-      const minIndex = Math.min(...targetIndexes);
-      setCurrentSlideIndex(minIndex);
+        return updated;
+      });
     };
 
     const observer = new IntersectionObserver(callback, {
       root: ref.current,
-      threshold: 1,
+      threshold: [0, 0.9, 1],
     });
 
     const elements = Array.from({ length: total })
