@@ -90,6 +90,32 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="gap 5">
+              <StyledCarousel
+                carouselKey="gap-5"
+                perView={3}
+                gap={5}
+                autoplay={5000}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="gap 10">
+              <StyledCarousel
+                carouselKey="gap-10"
+                perView={3}
+                gap={10}
+                autoplay={5000}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
