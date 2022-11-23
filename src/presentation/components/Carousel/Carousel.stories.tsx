@@ -70,3 +70,11 @@ export const PictureCarousel = () => (
     ))}
   </Carousel>
 );
+
+export const PerView3: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-perview-3',
+    children,
+    perView: 3,
+  },
+};
