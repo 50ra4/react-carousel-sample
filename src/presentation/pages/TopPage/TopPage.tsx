@@ -108,6 +108,7 @@ function TopPage() {
                 perView={3}
                 gap={1}
                 peek={{ after: 20 }}
+                bound={true}
               >
                 {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />

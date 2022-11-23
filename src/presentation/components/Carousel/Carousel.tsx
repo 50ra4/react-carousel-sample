@@ -321,9 +321,7 @@ export function Carousel({
             <Snapper multipleSlide={!!perView && perView > 1} />
           </Slide>
         ))}
-        {!!sliderPaddingRight && (
-          <SliderPadding inserted={sliderPaddingRight} />
-        )}
+        <SliderPadding inserted={sliderPaddingRight} />
       </Slider>
       {!disabledSideNavigation.previous && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
