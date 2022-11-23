@@ -12,6 +12,7 @@ export function Picture({
 }) {
   return (
     <ImageWrapper className={className}>
+      <div />
       <img src={src} alt={caption} />
     </ImageWrapper>
   );
@@ -19,10 +20,10 @@ export function Picture({
 
 const ImageWrapper = styled.div`
   position: relative;
-  height: calc(100% - 2px);
+  height: 100%;
   width: 100%;
 
-  &:before {
+  & > div {
     content: '';
     position: absolute;
     top: 0;
