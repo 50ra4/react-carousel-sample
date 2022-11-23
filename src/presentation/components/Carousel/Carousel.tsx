@@ -71,6 +71,8 @@ export type CarouselOptions = {
   startAt?: number;
   /** allow looping. default: true */
   rewind?: boolean;
+  /** stop running perView number of slides from the end */
+  bound?: boolean;
 
   /** hide Indicator. default: false */
   disabledIndicator?: boolean;
@@ -97,9 +99,11 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
   ref: React.RefObject<T | null>,
   { total, carouselKey }: { total: number; carouselKey: string },
 ) {
-  const [visibleIndexes, setVisibleIndexes] = useState<Set<number>>(new Set());
-  const prevVisibleIndexes = useRef(visibleIndexes);
-  const currentSlideIndex = Math.min(...Array.from(visibleIndexes));
+  const [displayedIndexes, setDisplayedIndexes] = useState<Set<number>>(
+    new Set(),
+  );
+  const prevDisplayedIndexes = useRef(displayedIndexes);
+  const currentSlideIndex = Math.min(...Array.from(displayedIndexes));
 
   useEffect(() => {
     if (!ref.current) {
@@ -107,7 +111,7 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
     }
 
     const callback: IntersectionObserverCallback = (entries) => {
-      const updated = new Set(prevVisibleIndexes.current);
+      const updated = new Set(prevDisplayedIndexes.current);
       entries.forEach((entry) => {
         const index = slideId2SlideIndex(entry.target.id);
         if (entry.intersectionRatio > 0.9) {
@@ -117,12 +121,12 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
         }
       });
 
-      if (isEqualSlideIndexes(updated, prevVisibleIndexes.current)) {
+      if (isEqualSlideIndexes(updated, prevDisplayedIndexes.current)) {
         return;
       }
 
-      setVisibleIndexes(updated);
-      prevVisibleIndexes.current = updated;
+      setDisplayedIndexes(updated);
+      prevDisplayedIndexes.current = updated;
     };
 
     const observer = new IntersectionObserver(callback, {
@@ -147,7 +151,10 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
     };
   }, [carouselKey, total, ref]);
 
-  return currentSlideIndex;
+  return {
+    currentSlideIndex,
+    isDisplayedLastSlide: displayedIndexes.has(total - 1),
+  };
 }
 
 export function Carousel({
@@ -159,6 +166,7 @@ export function Carousel({
   peek: peekOption,
   startAt,
   rewind = true,
+  bound,
   disabledIndicator,
   disabledSideNavigation: disabledSideNavigationOption,
   children,
@@ -218,20 +226,25 @@ export function Carousel({
     [carouselKey, children],
   );
 
-  const currentSlideIndex = useCurrentSlideIndex(sliderRef, {
-    carouselKey,
-    total: slides.length,
-  });
+  const { currentSlideIndex, isDisplayedLastSlide } = useCurrentSlideIndex(
+    sliderRef,
+    {
+      carouselKey,
+      total: slides.length,
+    },
+  );
 
-  const isDisplayedFirstSlide = currentSlideIndex === 0;
-  const canScrollToPrevious = rewind || !isDisplayedFirstSlide;
-  const previousSlideIndex = isDisplayedFirstSlide
+  const isCurrentSlideFirst = currentSlideIndex === 0;
+  const canScrollToPrevious = rewind || !isCurrentSlideFirst;
+  const previousSlideIndex = isCurrentSlideFirst
     ? slides.length - 1
     : currentSlideIndex - 1;
 
-  const isDisplayedLastSlide = currentSlideIndex === slides.length - 1;
-  const canScrollToNext = rewind || !isDisplayedLastSlide;
-  const nextSlideIndex = isDisplayedLastSlide ? 0 : currentSlideIndex + 1;
+  const isCurrentSlideLast = currentSlideIndex === slides.length - 1;
+  const shouldScrollToFirst =
+    isCurrentSlideLast || (!!bound && isDisplayedLastSlide);
+  const canScrollToNext = rewind || !shouldScrollToFirst;
+  const nextSlideIndex = shouldScrollToFirst ? 0 : currentSlideIndex + 1;
 
   const scrollToPrevious = useCallback(() => {
     scrollToSlide(previousSlideIndex);
@@ -279,10 +292,10 @@ export function Carousel({
 
     setSliderOption({
       slideWidth: perWidth,
-      sliderPaddingRight: (perView - 1) * sliderWidth,
+      sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
       gapWidth: perView > 1 ? gap : 0,
     });
-  }, [gap, perView, sliderWidth]);
+  }, [bound, gap, perView, sliderWidth]);
 
   useEffect(() => {
     if (!startAt) {

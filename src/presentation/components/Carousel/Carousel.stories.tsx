@@ -132,3 +132,12 @@ export const NoRewind: ComponentStoryObj<typeof Carousel> = {
     rewind: false,
   },
 };
+
+export const Bound: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-bound',
+    children,
+    perView: 3,
+    bound: true,
+  },
+};
