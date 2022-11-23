@@ -88,11 +88,15 @@ const createSlideId = (carouselKey: string, index: number) =>
 const slideId2SlideIndex = (slideId: string): number =>
   +slideId.slice(slideId.lastIndexOf('_') + 1);
 
+const isEqualSlideIndexes = (a: Set<number>, b: Set<number>): boolean =>
+  a.size === b.size && Array.from(a).every((v) => b.has(v));
+
 function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
   ref: React.RefObject<T | null>,
   { total, carouselKey }: { total: number; carouselKey: string },
 ) {
   const [visibleIndexes, setVisibleIndexes] = useState<Set<number>>(new Set());
+  const prevVisibleIndexes = useRef(visibleIndexes);
   const currentSlideIndex = Math.min(...Array.from(visibleIndexes));
 
   useEffect(() => {
@@ -101,21 +105,22 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
     }
 
     const callback: IntersectionObserverCallback = (entries) => {
-      setVisibleIndexes((prev) => {
-        // TODO: check changes from last time and then update
-        const updated = new Set(prev);
-
-        entries.forEach((entry) => {
-          const index = slideId2SlideIndex(entry.target.id);
-          if (entry.intersectionRatio > 0.9) {
-            updated.add(index);
-          } else {
-            updated.delete(index);
-          }
-        });
-
-        return updated;
+      const updated = new Set(prevVisibleIndexes.current);
+      entries.forEach((entry) => {
+        const index = slideId2SlideIndex(entry.target.id);
+        if (entry.intersectionRatio > 0.9) {
+          updated.add(index);
+        } else {
+          updated.delete(index);
+        }
       });
+
+      if (isEqualSlideIndexes(updated, prevVisibleIndexes.current)) {
+        return;
+      }
+
+      setVisibleIndexes(updated);
+      prevVisibleIndexes.current = updated;
     };
 
     const observer = new IntersectionObserver(callback, {
