@@ -27,6 +27,59 @@ const createSlideId = (carouselKey: string, index: number) =>
 const slideId2SlideIndex = (slideId: string): number =>
   +slideId.slice(slideId.lastIndexOf('_') + 1);
 
+function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
+  ref: React.RefObject<T | null>,
+  {
+    total,
+    carouselKey,
+    initial = 0,
+  }: { total: number; carouselKey: string; initial?: number },
+) {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(initial);
+
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    const callback: IntersectionObserverCallback = (entries) => {
+      const targetIndexes = entries
+        .filter((entry) => entry.isIntersecting)
+        .map((entry) => slideId2SlideIndex(entry.target.id));
+
+      if (!targetIndexes.length) {
+        return;
+      }
+
+      const minIndex = Math.min(...targetIndexes);
+      setCurrentSlideIndex(minIndex);
+    };
+
+    const observer = new IntersectionObserver(callback, {
+      root: ref.current,
+      threshold: 1,
+    });
+
+    const elements = Array.from({ length: total })
+      .map((_, i) =>
+        document.querySelector(`#${createSlideId(carouselKey, i)}`),
+      )
+      .filter((v): v is NonNullable<typeof v> => !!v);
+
+    elements.forEach((elm) => {
+      observer.observe(elm);
+    });
+
+    return () => {
+      elements.forEach((elm) => {
+        observer.unobserve(elm);
+      });
+    };
+  }, [carouselKey, total, ref]);
+
+  return currentSlideIndex;
+}
+
 export function Carousel({
   className,
   carouselKey,
@@ -34,11 +87,11 @@ export function Carousel({
   perView,
   children,
 }: CarouselProps) {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
   const [slideWidth, setSlideWidth] = useState<number | null>(null);
   const [sliderPaddingRight, setSliderPaddingRight] = useState(0);
+  const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -75,6 +128,11 @@ export function Carousel({
     [carouselKey, children],
   );
 
+  const currentSlideIndex = useCurrentSlideIndex(sliderRef, {
+    carouselKey,
+    total: slides.length,
+  });
+
   const scrollToPreviousSlide = useCallback(() => {
     const targetIndex =
       currentSlideIndex === 0 ? slides.length - 1 : currentSlideIndex - 1;
@@ -86,46 +144,6 @@ export function Carousel({
       currentSlideIndex === slides.length - 1 ? 0 : currentSlideIndex + 1;
     scrollToSlide(targetIndex);
   }, [currentSlideIndex, scrollToSlide, slides.length]);
-
-  useEffect(() => {
-    if (!sliderRef.current) {
-      return;
-    }
-
-    const callback: IntersectionObserverCallback = (entries) => {
-      const targetIndexes = entries
-        .filter((entry) => entry.isIntersecting)
-        .map((entry) => slideId2SlideIndex(entry.target.id));
-
-      if (!targetIndexes.length) {
-        return;
-      }
-
-      const minIndex = Math.min(...targetIndexes);
-      setCurrentSlideIndex(minIndex);
-    };
-
-    const observer = new IntersectionObserver(callback, {
-      root: sliderRef.current,
-      threshold: 1,
-    });
-
-    const elements = slides
-      .map(({ slideId }) => document.querySelector(`#${slideId}`))
-      .filter((v): v is NonNullable<typeof v> => !!v);
-
-    elements.forEach((elm) => {
-      observer.observe(elm);
-    });
-
-    return () => {
-      elements.forEach((elm) => {
-        observer.unobserve(elm);
-      });
-    };
-  }, [slides]);
-
-  const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
     if (!autoplay) {
