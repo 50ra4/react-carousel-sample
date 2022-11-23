@@ -87,3 +87,12 @@ export const Gap5: ComponentStoryObj<typeof Carousel> = {
     gap: 5,
   },
 };
+
+export const PeekBefore20: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-peek-before-20',
+    children,
+    perView: 3,
+    peek: { before: 20 },
+  },
+};
