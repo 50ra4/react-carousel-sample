@@ -174,6 +174,19 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="start at 3">
+              <StyledCarousel
+                carouselKey="start-at-3"
+                perView={3}
+                gap={1}
+                startAt={2}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
