@@ -41,6 +41,7 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
 
     const callback: IntersectionObserverCallback = (entries) => {
       setVisibleIndexes((prev) => {
+        // TODO: check changes from last time and then update
         const updated = new Set(prev);
 
         entries.forEach((entry) => {
