@@ -187,6 +187,19 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="not rewind">
+              <StyledCarousel
+                carouselKey="not-rewind"
+                perView={2}
+                gap={1}
+                rewind={false}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
