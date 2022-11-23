@@ -5,7 +5,7 @@ import { CarouselSampleSlide } from '@/components/Carousel/CarouselSampleSlide';
 import { Picture } from '@/components/Picture/Picture';
 import { SubSection } from '@/components/SubSection/SubSection';
 
-const Array4 = Array.from({ length: 4 }).map((_, i) => i + 1);
+const Array8 = Array.from({ length: 8 }).map((_, i) => i + 1);
 const IMAGE_LIST = [
   { src: 'images/sky_00009.jpg', caption: 'sky_00009' },
   { src: 'images/sky_00023.jpg', caption: 'sky_00023' },
@@ -21,7 +21,7 @@ function TopPage() {
         <Title>React Carousel Sample</Title>
         <FullWidthSubSection title="full width">
           <FullWidthCarousel carouselKey="full-width" autoplay={10000}>
-            {Array4.map((count) => (
+            {Array8.map((count) => (
               <CarouselSampleSlide key={count} count={count} />
             ))}
           </FullWidthCarousel>
@@ -29,8 +29,13 @@ function TopPage() {
         <Wrapper>
           <SubSectionGroup>
             <StyledSubSection title="autoplay 5s">
-              <StyledCarousel carouselKey="autoplay-5s" autoplay={5000}>
-                {Array4.map((count) => (
+              <StyledCarousel
+                carouselKey="autoplay-5s"
+                perView={2}
+                gap={1}
+                autoplay={5000}
+              >
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -46,7 +51,7 @@ function TopPage() {
 
             <StyledSubSection title="perView 2">
               <StyledCarousel carouselKey="perView-2" perView={2}>
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -54,7 +59,7 @@ function TopPage() {
 
             <StyledSubSection title="perView 4">
               <StyledCarousel carouselKey="perView-4" perView={4}>
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -62,7 +67,7 @@ function TopPage() {
 
             <StyledSubSection title="perView 5">
               <StyledCarousel carouselKey="perView-5" perView={5}>
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -70,7 +75,7 @@ function TopPage() {
 
             <StyledSubSection title="gap 5">
               <StyledCarousel carouselKey="gap-5" perView={3} gap={5}>
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -78,7 +83,7 @@ function TopPage() {
 
             <StyledSubSection title="gap 10">
               <StyledCarousel carouselKey="gap-10" perView={3} gap={10}>
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -91,7 +96,7 @@ function TopPage() {
                 gap={1}
                 peek={{ before: 20 }}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -104,7 +109,7 @@ function TopPage() {
                 gap={1}
                 peek={{ after: 20 }}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -117,7 +122,7 @@ function TopPage() {
                 gap={1}
                 peek={20}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -130,7 +135,7 @@ function TopPage() {
                 gap={1}
                 disabledIndicator={true}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -143,7 +148,7 @@ function TopPage() {
                 gap={1}
                 disabledSideNavigation={{ previous: true }}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -156,7 +161,7 @@ function TopPage() {
                 gap={1}
                 disabledSideNavigation={{ next: true }}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -169,7 +174,7 @@ function TopPage() {
                 gap={1}
                 disabledSideNavigation={true}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>
@@ -182,7 +187,20 @@ function TopPage() {
                 gap={1}
                 startAt={2}
               >
-                {Array4.map((count) => (
+                {Array8.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="not rewind">
+              <StyledCarousel
+                carouselKey="not-rewind"
+                perView={2}
+                gap={1}
+                rewind={false}
+              >
+                {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
               </StyledCarousel>

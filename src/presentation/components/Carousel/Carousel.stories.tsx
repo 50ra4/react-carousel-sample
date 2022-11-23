@@ -123,3 +123,12 @@ export const StartAt: ComponentStoryObj<typeof Carousel> = {
     startAt: 1,
   },
 };
+
+export const NoRewind: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-no-rewind',
+    children,
+    perView: 3,
+    rewind: false,
+  },
+};
