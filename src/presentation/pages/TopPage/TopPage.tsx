@@ -54,6 +54,42 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="perView 2">
+              <StyledCarousel
+                carouselKey="perView-2"
+                perView={2}
+                autoplay={5000}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="perView 4">
+              <StyledCarousel
+                carouselKey="perView-4"
+                perView={4}
+                autoplay={5000}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="perView 5">
+              <StyledCarousel
+                carouselKey="perView-5"
+                perView={5}
+                autoplay={5000}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
