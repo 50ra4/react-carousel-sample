@@ -78,3 +78,12 @@ export const PerView3: ComponentStoryObj<typeof Carousel> = {
     perView: 3,
   },
 };
+
+export const Gap5: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-gap-5',
+    children,
+    perView: 3,
+    gap: 5,
+  },
+};
