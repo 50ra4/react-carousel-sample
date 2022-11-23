@@ -37,7 +37,7 @@ export function Carousel({
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const [slideWidth, setSlideWidth] = useState<number | null>(sliderWidth);
+  const [slideWidth, setSlideWidth] = useState<number | null>(null);
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -92,12 +92,16 @@ export function Carousel({
     }
 
     const callback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          return;
-        }
-        setCurrentSlideIndex(slideId2SlideIndex(entry.target.id));
-      });
+      const targetIndexes = entries
+        .filter((entry) => entry.isIntersecting)
+        .map((entry) => slideId2SlideIndex(entry.target.id));
+
+      if (!targetIndexes.length) {
+        return;
+      }
+
+      const minIndex = Math.min(...targetIndexes);
+      setCurrentSlideIndex(minIndex);
     };
 
     const observer = new IntersectionObserver(callback, {
@@ -151,9 +155,8 @@ export function Carousel({
       return;
     }
 
-    const width = sliderWidth / perView;
-    console.log(width);
-    setSlideWidth(width);
+    const perWidth = sliderWidth / perView;
+    setSlideWidth(perWidth);
   }, [perView, sliderWidth]);
 
   return (
@@ -170,7 +173,7 @@ export function Carousel({
         {slides.map(({ slideId, child }) => (
           <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
             {child}
-            <Snapper />
+            <Snapper multipleSlide={!!perView && perView > 1} />
           </Slide>
         ))}
       </Slider>
@@ -198,13 +201,14 @@ export function Carousel({
   );
 }
 
-const Snapper = styled.div`
+const Snapper = styled.div<{ multipleSlide?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  scroll-snap-align: center;
+  scroll-snap-align: ${({ multipleSlide }) =>
+    multipleSlide ? 'start' : 'center'};
 `;
 
 const Slide = styled.li<{ width?: number }>`
