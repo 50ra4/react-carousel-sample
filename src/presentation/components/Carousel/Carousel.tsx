@@ -38,6 +38,7 @@ export function Carousel({
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
   const [slideWidth, setSlideWidth] = useState<number | null>(null);
+  const [sliderPaddingRight, setSliderPaddingRight] = useState(0);
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -155,8 +156,12 @@ export function Carousel({
       return;
     }
 
+    // TODO: use useReducer？
     const perWidth = sliderWidth / perView;
     setSlideWidth(perWidth);
+
+    const remainder = sliderWidth % perView;
+    setSliderPaddingRight(remainder * perWidth);
   }, [perView, sliderWidth]);
 
   return (
@@ -176,6 +181,9 @@ export function Carousel({
             <Snapper multipleSlide={!!perView && perView > 1} />
           </Slide>
         ))}
+        {!!sliderPaddingRight && (
+          <SliderPadding inserted={sliderPaddingRight} />
+        )}
       </Slider>
       <PreviewButton onClick={scrollToPreviousSlide}>
         Go to previous slide
@@ -200,6 +208,10 @@ export function Carousel({
     </Root>
   );
 }
+
+const SliderPadding = styled.div<{ inserted: number }>`
+  padding-left: ${({ inserted }) => inserted}px;
+`;
 
 const Snapper = styled.div<{ multipleSlide?: boolean }>`
   position: absolute;
