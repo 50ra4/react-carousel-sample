@@ -20,7 +20,7 @@ function TopPage() {
       <ResponsiveContainer>
         <Title>React Carousel Sample</Title>
         <FullWidthSubSection title="full width">
-          <FullWidthCarousel carouselKey="full-width">
+          <FullWidthCarousel carouselKey="full-width" autoplay={10000}>
             {Array4.map((count) => (
               <CarouselSampleSlide key={count} count={count} />
             ))}
@@ -28,17 +28,6 @@ function TopPage() {
         </FullWidthSubSection>
         <Wrapper>
           <SubSectionGroup>
-            <StyledSubSection title="autoplay 3s">
-              <StyledCarousel carouselKey="autoplay-3s" autoplay={3000}>
-                {Array4.map((count) => (
-                  <CarouselSampleSlide key={count} count={count} />
-                ))}
-                {Array4.map((count) => (
-                  <CarouselSampleSlide key={count} count={count + 4} />
-                ))}
-              </StyledCarousel>
-            </StyledSubSection>
-
             <StyledSubSection title="autoplay 5s">
               <StyledCarousel carouselKey="autoplay-5s" autoplay={5000}>
                 {Array4.map((count) => (
@@ -56,11 +45,7 @@ function TopPage() {
             </StyledSubSection>
 
             <StyledSubSection title="perView 2">
-              <StyledCarousel
-                carouselKey="perView-2"
-                perView={2}
-                autoplay={5000}
-              >
+              <StyledCarousel carouselKey="perView-2" perView={2}>
                 {Array4.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
@@ -68,11 +53,7 @@ function TopPage() {
             </StyledSubSection>
 
             <StyledSubSection title="perView 4">
-              <StyledCarousel
-                carouselKey="perView-4"
-                perView={4}
-                autoplay={5000}
-              >
+              <StyledCarousel carouselKey="perView-4" perView={4}>
                 {Array4.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
@@ -80,11 +61,7 @@ function TopPage() {
             </StyledSubSection>
 
             <StyledSubSection title="perView 5">
-              <StyledCarousel
-                carouselKey="perView-5"
-                perView={5}
-                autoplay={5000}
-              >
+              <StyledCarousel carouselKey="perView-5" perView={5}>
                 {Array4.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
@@ -92,12 +69,7 @@ function TopPage() {
             </StyledSubSection>
 
             <StyledSubSection title="gap 5">
-              <StyledCarousel
-                carouselKey="gap-5"
-                perView={3}
-                gap={5}
-                autoplay={5000}
-              >
+              <StyledCarousel carouselKey="gap-5" perView={3} gap={5}>
                 {Array4.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
                 ))}
@@ -105,11 +77,45 @@ function TopPage() {
             </StyledSubSection>
 
             <StyledSubSection title="gap 10">
+              <StyledCarousel carouselKey="gap-10" perView={3} gap={10}>
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="peek before 20">
               <StyledCarousel
-                carouselKey="gap-10"
+                carouselKey="peek-before-20"
                 perView={3}
-                gap={10}
-                autoplay={5000}
+                gap={1}
+                peek={{ before: 20 }}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="peek after 20">
+              <StyledCarousel
+                carouselKey="peek-after-20"
+                perView={3}
+                gap={1}
+                peek={{ after: 20 }}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="peek 20">
+              <StyledCarousel
+                carouselKey="peek-20"
+                perView={3}
+                gap={1}
+                peek={20}
               >
                 {Array4.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
