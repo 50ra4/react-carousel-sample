@@ -96,3 +96,21 @@ export const PeekBefore20: ComponentStoryObj<typeof Carousel> = {
     peek: { before: 20 },
   },
 };
+
+export const DisabledIndicator: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-disabled-indicator',
+    children,
+    perView: 3,
+    disabledIndicator: true,
+  },
+};
+
+export const DisabledSideButton: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-disabled-side-button',
+    children,
+    perView: 3,
+    disabledSideNavigation: true,
+  },
+};

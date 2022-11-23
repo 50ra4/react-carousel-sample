@@ -31,6 +31,33 @@ const persePeek = (peek?: Peek): PeekObject => {
   };
 };
 
+type SideNavigationObject = {
+  previous: boolean;
+  next: boolean;
+};
+type SideNavigationOption = boolean | Partial<SideNavigationObject>;
+
+const perseSideNavigationOption = (
+  option?: SideNavigationOption,
+): SideNavigationObject => {
+  if (typeof option === 'object') {
+    return {
+      previous: option.previous ?? false,
+      next: option.next ?? false,
+    };
+  }
+  if (typeof option === 'boolean') {
+    return {
+      previous: option,
+      next: option,
+    };
+  }
+  return {
+    previous: false,
+    next: false,
+  };
+};
+
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
@@ -38,8 +65,13 @@ export type CarouselOptions = {
   perView?: number;
   /** add margin between slides. But 0 when perView is 1. default: 0 */
   gap?: number;
-  /** The distance value of the next and previous slider which have to peek in the current view. default: 0 */
+  /** The value of the future slider which have to be visible in the current view. default: 0 */
   peek?: Peek;
+
+  /** hide Indicator. default: false */
+  disabledIndicator?: boolean;
+  /** hide side navigation button. default: false */
+  disabledSideNavigation?: SideNavigationOption;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -115,10 +147,17 @@ export function Carousel({
   autoplay,
   perView,
   gap = 0,
-  peek: _peek,
+  peek: peekOption,
+  disabledIndicator,
+  disabledSideNavigation: disabledSideNavigationOption,
   children,
 }: CarouselProps) {
-  const peek = useMemo(() => persePeek(_peek), [_peek]);
+  const peek = useMemo(() => persePeek(peekOption), [peekOption]);
+  const disabledSideNavigation = useMemo(
+    () => perseSideNavigationOption(disabledSideNavigationOption),
+    [disabledSideNavigationOption],
+  );
+
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
   const [{ slideWidth, sliderPaddingRight, gapWidth }, setSliderOption] =
@@ -245,26 +284,32 @@ export function Carousel({
           <SliderPadding inserted={sliderPaddingRight} />
         )}
       </Slider>
-      <PreviewButton onClick={scrollToPreviousSlide}>
-        Go to previous slide
-      </PreviewButton>
-      <NextButton onClick={scrollToNextSlide}>Go to next slide</NextButton>
-      <Indicator>
-        <IndicatorList>
-          {slides.map(({ slideId }, i) => (
-            <IndicatorItem key={slideId}>
-              <IndicatorButton
-                isActive={currentSlideIndex === i}
-                onClick={() => {
-                  scrollToSlide(i);
-                }}
-              >
-                Go to {i + 1} slide
-              </IndicatorButton>
-            </IndicatorItem>
-          ))}
-        </IndicatorList>
-      </Indicator>
+      {!disabledSideNavigation.previous && (
+        <PreviewButton onClick={scrollToPreviousSlide}>
+          Go to previous slide
+        </PreviewButton>
+      )}
+      {!disabledSideNavigation.next && (
+        <NextButton onClick={scrollToNextSlide}>Go to next slide</NextButton>
+      )}
+      {!disabledIndicator && (
+        <Indicator>
+          <IndicatorList>
+            {slides.map(({ slideId }, i) => (
+              <IndicatorItem key={slideId}>
+                <IndicatorButton
+                  isActive={currentSlideIndex === i}
+                  onClick={() => {
+                    scrollToSlide(i);
+                  }}
+                >
+                  Go to {i + 1} slide
+                </IndicatorButton>
+              </IndicatorItem>
+            ))}
+          </IndicatorList>
+        </Indicator>
+      )}
     </Root>
   );
 }
