@@ -116,6 +116,45 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="peek before 20">
+              <StyledCarousel
+                carouselKey="peek-before-20"
+                perView={3}
+                gap={1}
+                peek={{ before: 20 }}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="peek after 20">
+              <StyledCarousel
+                carouselKey="peek-after-20"
+                perView={3}
+                gap={1}
+                peek={{ after: 20 }}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="peek 20">
+              <StyledCarousel
+                carouselKey="peek-20"
+                perView={3}
+                gap={1}
+                peek={20}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
