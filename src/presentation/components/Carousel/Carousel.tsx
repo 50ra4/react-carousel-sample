@@ -67,6 +67,8 @@ export type CarouselOptions = {
   gap?: number;
   /** The value of the future slider which have to be visible in the current view. default: 0 */
   peek?: Peek;
+  /** Start at specific slide number. default: 0 */
+  startAt?: number;
 
   /** hide Indicator. default: false */
   disabledIndicator?: boolean;
@@ -148,6 +150,7 @@ export function Carousel({
   perView,
   gap = 0,
   peek: peekOption,
+  startAt,
   disabledIndicator,
   disabledSideNavigation: disabledSideNavigationOption,
   children,
@@ -262,6 +265,13 @@ export function Carousel({
       gapWidth: perView > 1 ? gap : 0,
     });
   }, [gap, perView, sliderWidth]);
+
+  useEffect(() => {
+    if (!startAt) {
+      return;
+    }
+    scrollToSlide(startAt);
+  }, [scrollToSlide, startAt]);
 
   return (
     <Root
