@@ -280,7 +280,7 @@ const SubSectionGroup = styled.div`
     margin: 0 8px 8px 0;
 
     & > ${StyledCarousel} {
-      width: 300px;
+      width: calc(calc(1280px - 24px) / 4);
       height: 225px;
     }
   }
