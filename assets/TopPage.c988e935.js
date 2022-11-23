@@ -1,4 +1,4 @@
-import{s as i,j as y,a as t,r as s,R as Z}from"./index.0b74ccfe.js";function M({className:e,onClick:r,children:n}){return y(ee,{className:e,onClick:r,children:[t(te,{}),n]})}const ee=i.button`
+import{s as i,j as y,a as t,r as s,R as Z}from"./index.bce9509e.js";function M({className:e,onClick:r,children:n}){return y(ee,{className:e,onClick:r,children:[t(te,{}),n]})}const ee=i.button`
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -156,7 +156,7 @@ import{s as i,j as y,a as t,r as s,R as Z}from"./index.0b74ccfe.js";function M({
     margin: 0 8px 8px 0;
 
     & > ${l} {
-      width: 300px;
+      width: calc(calc(1280px - 24px) / 4);
       height: 225px;
     }
   }
