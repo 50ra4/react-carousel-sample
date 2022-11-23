@@ -114,3 +114,12 @@ export const DisabledSideButton: ComponentStoryObj<typeof Carousel> = {
     disabledSideNavigation: true,
   },
 };
+
+export const StartAt: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-startAt',
+    children,
+    perView: 3,
+    startAt: 1,
+  },
+};
