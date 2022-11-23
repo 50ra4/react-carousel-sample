@@ -178,9 +178,7 @@ export function Carousel({
     // TODO: use useReducer？
     const perWidth = sliderWidth / perView;
     setSlideWidth(perWidth);
-
-    const remainder = sliderWidth % perView;
-    setSliderPaddingRight(remainder * perWidth);
+    setSliderPaddingRight((perView - 1) * sliderWidth);
   }, [perView, sliderWidth]);
 
   return (
