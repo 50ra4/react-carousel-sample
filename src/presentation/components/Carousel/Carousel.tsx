@@ -12,7 +12,10 @@ import { useContentWidth } from 'src/hooks/useContentWidth';
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
+  /** a number of slides visible on the slider. default: 1 */
   perView?: number;
+  /** add margin between slides. But 0 when perView is 1. default: 0 */
+  gap?: number;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -87,12 +90,21 @@ export function Carousel({
   carouselKey,
   autoplay,
   perView,
+  gap = 0,
   children,
 }: CarouselProps) {
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const [slideWidth, setSlideWidth] = useState<number | null>(null);
-  const [sliderPaddingRight, setSliderPaddingRight] = useState(0);
+  const [{ slideWidth, sliderPaddingRight, gapWidth }, setSliderOption] =
+    useState<{
+      slideWidth: number | null;
+      sliderPaddingRight: number;
+      gapWidth: number;
+    }>({
+      slideWidth: null,
+      sliderPaddingRight: 0,
+      gapWidth: 0,
+    });
   const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
@@ -176,11 +188,15 @@ export function Carousel({
       return;
     }
 
-    // TODO: use useReducer？
-    const perWidth = sliderWidth / perView;
-    setSlideWidth(perWidth);
-    setSliderPaddingRight((perView - 1) * sliderWidth);
-  }, [perView, sliderWidth]);
+    const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
+    const perWidth = (sliderWidth - gapTotal) / perView;
+
+    setSliderOption({
+      slideWidth: perWidth,
+      sliderPaddingRight: (perView - 1) * sliderWidth,
+      gapWidth: perView > 1 ? gap : 0,
+    });
+  }, [gap, perView, sliderWidth]);
 
   return (
     <Root
@@ -192,7 +208,7 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider ref={sliderRef}>
+      <Slider ref={sliderRef} gapWidth={gapWidth}>
         {slides.map(({ slideId, child }) => (
           <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
             {child}
@@ -252,12 +268,16 @@ const Root = styled.div`
   height: 100%;
 `;
 
-const Slider = styled.ol`
+const Slider = styled.ol<{ gapWidth: number }>`
   height: 100%;
   display: flex;
   overflow-x: scroll;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
+
+  & > ${Slide} + ${Slide} {
+    margin-left: ${({ gapWidth }) => (gapWidth ? gapWidth : 0)}px;
+  }
 `;
 
 const Indicator = styled.div`
