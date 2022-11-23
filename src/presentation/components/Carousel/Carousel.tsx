@@ -38,8 +38,11 @@ export type CarouselOptions = {
   perView?: number;
   /** add margin between slides. But 0 when perView is 1. default: 0 */
   gap?: number;
-  /** The distance value of the next and previous slider which have to peek in the current view. default: 0 */
+  /** The value of the future slider which have to be visible in the current view. default: 0 */
   peek?: Peek;
+
+  /** hide Indicator. default: false */
+  disabledIndicator?: boolean;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -116,6 +119,7 @@ export function Carousel({
   perView,
   gap = 0,
   peek: _peek,
+  disabledIndicator,
   children,
 }: CarouselProps) {
   const peek = useMemo(() => persePeek(_peek), [_peek]);
@@ -249,22 +253,24 @@ export function Carousel({
         Go to previous slide
       </PreviewButton>
       <NextButton onClick={scrollToNextSlide}>Go to next slide</NextButton>
-      <Indicator>
-        <IndicatorList>
-          {slides.map(({ slideId }, i) => (
-            <IndicatorItem key={slideId}>
-              <IndicatorButton
-                isActive={currentSlideIndex === i}
-                onClick={() => {
-                  scrollToSlide(i);
-                }}
-              >
-                Go to {i + 1} slide
-              </IndicatorButton>
-            </IndicatorItem>
-          ))}
-        </IndicatorList>
-      </Indicator>
+      {!disabledIndicator && (
+        <Indicator>
+          <IndicatorList>
+            {slides.map(({ slideId }, i) => (
+              <IndicatorItem key={slideId}>
+                <IndicatorButton
+                  isActive={currentSlideIndex === i}
+                  onClick={() => {
+                    scrollToSlide(i);
+                  }}
+                >
+                  Go to {i + 1} slide
+                </IndicatorButton>
+              </IndicatorItem>
+            ))}
+          </IndicatorList>
+        </Indicator>
+      )}
     </Root>
   );
 }
