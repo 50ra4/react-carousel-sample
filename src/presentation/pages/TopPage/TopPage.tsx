@@ -122,6 +122,58 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="disabled indicator">
+              <StyledCarousel
+                carouselKey="disabled-indicator"
+                perView={3}
+                gap={1}
+                disabledIndicator={true}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="hide previous button">
+              <StyledCarousel
+                carouselKey="disabled-previous-button"
+                perView={3}
+                gap={1}
+                disabledSideNavigation={{ previous: true }}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="hide next button">
+              <StyledCarousel
+                carouselKey="disabled-next-button"
+                perView={3}
+                gap={1}
+                disabledSideNavigation={{ next: true }}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
+
+            <StyledSubSection title="hide side button">
+              <StyledCarousel
+                carouselKey="disabled-side-button"
+                perView={3}
+                gap={1}
+                disabledSideNavigation={true}
+              >
+                {Array4.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
