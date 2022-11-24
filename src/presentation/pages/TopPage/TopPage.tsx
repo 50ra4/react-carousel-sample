@@ -147,7 +147,7 @@ function TopPage() {
                 carouselKey="disabled-previous-button"
                 perView={3}
                 gap={1}
-                disabledSideNavigation={{ previous: true }}
+                disabledSideButton={{ previous: true }}
               >
                 {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
@@ -160,7 +160,7 @@ function TopPage() {
                 carouselKey="disabled-next-button"
                 perView={3}
                 gap={1}
-                disabledSideNavigation={{ next: true }}
+                disabledSideButton={{ next: true }}
               >
                 {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
@@ -173,7 +173,7 @@ function TopPage() {
                 carouselKey="disabled-side-button"
                 perView={3}
                 gap={1}
-                disabledSideNavigation={true}
+                disabledSideButton={true}
               >
                 {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
