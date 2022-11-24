@@ -9,10 +9,10 @@ import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 import { useContentWidth } from 'src/hooks/useContentWidth';
 
-type PeekObject = { before: number; after: number };
-type Peek = number | Partial<PeekObject>;
+type Peek = { before: number; after: number };
+type PeekOption = number | Partial<Peek>;
 
-const persePeek = (peek?: Peek): PeekObject => {
+const persePeekOption = (peek?: PeekOption): Peek => {
   if (typeof peek === 'object') {
     return {
       before: peek.before ?? 0,
@@ -31,15 +31,13 @@ const persePeek = (peek?: Peek): PeekObject => {
   };
 };
 
-type SideNavigationObject = {
+type SideButton = {
   previous: boolean;
   next: boolean;
 };
-type SideNavigationOption = boolean | Partial<SideNavigationObject>;
+type SideButtonOption = boolean | Partial<SideButton>;
 
-const perseSideNavigationOption = (
-  option?: SideNavigationOption,
-): SideNavigationObject => {
+const perseSideButtonOption = (option?: SideButtonOption): SideButton => {
   if (typeof option === 'object') {
     return {
       previous: option.previous ?? false,
@@ -66,7 +64,7 @@ export type CarouselOptions = {
   /** add margin between slides. But 0 when perView is 1. default: 0 */
   gap?: number;
   /** The value of the future slider which have to be visible in the current view. default: 0 */
-  peek?: Peek;
+  peek?: PeekOption;
   /** Start at specific slide number. default: 0 */
   startAt?: number;
   /** allow looping. default: true */
@@ -77,7 +75,7 @@ export type CarouselOptions = {
   /** hide Indicator. default: false */
   disabledIndicator?: boolean;
   /** hide side navigation button. default: false */
-  disabledSideNavigation?: SideNavigationOption;
+  disabledSideButton?: SideButtonOption;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -168,13 +166,13 @@ export function Carousel({
   rewind = true,
   bound,
   disabledIndicator,
-  disabledSideNavigation: disabledSideNavigationOption,
+  disabledSideButton: disabledSideButtonOption,
   children,
 }: CarouselProps) {
-  const peek = useMemo(() => persePeek(peekOption), [peekOption]);
-  const disabledSideNavigation = useMemo(
-    () => perseSideNavigationOption(disabledSideNavigationOption),
-    [disabledSideNavigationOption],
+  const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
+  const disabledSideButton = useMemo(
+    () => perseSideButtonOption(disabledSideButtonOption),
+    [disabledSideButtonOption],
   );
 
   const sliderRef = useRef<HTMLOListElement | null>(null);
@@ -323,12 +321,12 @@ export function Carousel({
         ))}
         <SliderPadding inserted={sliderPaddingRight || peek.after} />
       </Slider>
-      {!disabledSideNavigation.previous && canScrollToPrevious && (
+      {!disabledSideButton.previous && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
           Go to previous slide
         </PreviewButton>
       )}
-      {!disabledSideNavigation.next && canScrollToNext && (
+      {!disabledSideButton.next && canScrollToNext && (
         <NextButton onClick={scrollToNext}>Go to next slide</NextButton>
       )}
       {!disabledIndicator && (
@@ -378,7 +376,7 @@ const Root = styled.div`
   height: 100%;
 `;
 
-type SliderProps = { peek: PeekObject; gapWidth: number };
+type SliderProps = { peek: Peek; gapWidth: number };
 
 const Slider = styled.ol<SliderProps>`
   height: 100%;

@@ -111,7 +111,7 @@ export const DisabledSideButton: ComponentStoryObj<typeof Carousel> = {
     carouselKey: 'carousel-disabled-side-button',
     children,
     perView: 3,
-    disabledSideNavigation: true,
+    disabledSideButton: true,
   },
 };
 
