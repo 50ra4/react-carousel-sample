@@ -141,3 +141,12 @@ export const Bound: ComponentStoryObj<typeof Carousel> = {
     bound: true,
   },
 };
+
+export const SlideWidth145: ComponentStoryObj<typeof Carousel> = {
+  args: {
+    carouselKey: 'carousel-slide-width-140',
+    children,
+    slideWidth: 640,
+    gap: 1,
+  },
+};
