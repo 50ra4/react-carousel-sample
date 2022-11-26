@@ -219,6 +219,18 @@ function TopPage() {
                 ))}
               </StyledCarousel>
             </StyledSubSection>
+
+            <StyledSubSection title="slide width 140">
+              <StyledCarousel
+                carouselKey="slide-width"
+                slideWidth={140}
+                gap={1}
+              >
+                {Array8.map((count) => (
+                  <CarouselSampleSlide key={count} count={count} />
+                ))}
+              </StyledCarousel>
+            </StyledSubSection>
           </SubSectionGroup>
         </Wrapper>
       </ResponsiveContainer>
