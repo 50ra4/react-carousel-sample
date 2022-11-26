@@ -454,6 +454,7 @@ const IndicatorButton = styled.button<{ isActive?: boolean }>`
   margin: 0 4px;
   font-size: 0;
   transition: transform 0.1s;
+  filter: drop-shadow(4px 4px 2px rgba(0, 0, 0, 0.2));
 `;
 
 const PreviewButton = styled(CircleTriangleButton)`
