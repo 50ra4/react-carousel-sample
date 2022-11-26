@@ -56,6 +56,13 @@ const perseSideButtonOption = (option?: SideButtonOption): SideButton => {
   };
 };
 
+type SliderOption = {
+  slideWidth: number | null;
+  sliderPaddingRight: number;
+  gapWidth: number;
+  multipleSlide?: boolean;
+};
+
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
@@ -71,6 +78,8 @@ export type CarouselOptions = {
   rewind?: boolean;
   /** stop running perView number of slides from the end */
   bound?: boolean;
+  /** sets the width of the slide. However, it cannot be used together with the preview. */
+  slideWidth?: number;
 
   /** hide Indicator. default: false */
   disabledIndicator?: boolean;
@@ -165,6 +174,7 @@ export function Carousel({
   startAt,
   rewind = true,
   bound,
+  slideWidth,
   disabledIndicator,
   disabledSideButton: disabledSideButtonOption,
   children,
@@ -177,16 +187,11 @@ export function Carousel({
 
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const [{ slideWidth, sliderPaddingRight, gapWidth }, setSliderOption] =
-    useState<{
-      slideWidth: number | null;
-      sliderPaddingRight: number;
-      gapWidth: number;
-    }>({
-      slideWidth: null,
-      sliderPaddingRight: 0,
-      gapWidth: 0,
-    });
+  const [sliderOption, setSliderOption] = useState<SliderOption>({
+    slideWidth: null,
+    sliderPaddingRight: 0,
+    gapWidth: 0,
+  });
   const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
@@ -275,6 +280,13 @@ export function Carousel({
   }, [autoplay, canScrollToNext, isHover, scrollToNext]);
 
   useEffect(() => {
+    if (!perView || !slideWidth) {
+      return;
+    }
+    throw new Error('both perView and slideWidth cannot be set.');
+  }, [perView, slideWidth]);
+
+  useEffect(() => {
     if (!perView) {
       return;
     }
@@ -292,8 +304,24 @@ export function Carousel({
       slideWidth: perWidth,
       sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
       gapWidth: perView > 1 ? gap : 0,
+      multipleSlide: perView > 1,
     });
   }, [bound, gap, perView, sliderWidth]);
+
+  useEffect(() => {
+    if (!slideWidth) {
+      return;
+    }
+    if (!sliderWidth) {
+      return;
+    }
+    setSliderOption({
+      slideWidth,
+      sliderPaddingRight: bound ? 0 : sliderWidth - slideWidth,
+      gapWidth: gap,
+      multipleSlide: sliderWidth > slideWidth,
+    });
+  }, [bound, gap, slideWidth, sliderWidth]);
 
   useEffect(() => {
     if (!startAt) {
@@ -312,14 +340,20 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
+      <Slider ref={sliderRef} gapWidth={sliderOption.gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
-          <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
+          <Slide
+            key={slideId}
+            id={slideId}
+            width={sliderOption.slideWidth ?? undefined}
+          >
             {child}
-            <Snapper multipleSlide={!!perView && perView > 1} />
+            <Snapper multipleSlide={!!sliderOption.multipleSlide} />
           </Slide>
         ))}
-        <SliderPadding inserted={sliderPaddingRight || peek.after} />
+        <SliderPadding
+          inserted={sliderOption.sliderPaddingRight || peek.after}
+        />
       </Slider>
       {!disabledSideButton.previous && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
