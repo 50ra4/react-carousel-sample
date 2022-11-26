@@ -177,16 +177,15 @@ export function Carousel({
 
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const [{ slideWidth, sliderPaddingRight, gapWidth }, setSliderOption] =
-    useState<{
-      slideWidth: number | null;
-      sliderPaddingRight: number;
-      gapWidth: number;
-    }>({
-      slideWidth: null,
-      sliderPaddingRight: 0,
-      gapWidth: 0,
-    });
+  const [sliderOption, setSliderOption] = useState<{
+    slideWidth: number | null;
+    sliderPaddingRight: number;
+    gapWidth: number;
+  }>({
+    slideWidth: null,
+    sliderPaddingRight: 0,
+    gapWidth: 0,
+  });
   const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
@@ -312,14 +311,20 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
+      <Slider ref={sliderRef} gapWidth={sliderOption.gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
-          <Slide key={slideId} id={slideId} width={slideWidth ?? undefined}>
+          <Slide
+            key={slideId}
+            id={slideId}
+            width={sliderOption.slideWidth ?? undefined}
+          >
             {child}
             <Snapper multipleSlide={!!perView && perView > 1} />
           </Slide>
         ))}
-        <SliderPadding inserted={sliderPaddingRight || peek.after} />
+        <SliderPadding
+          inserted={sliderOption.sliderPaddingRight || peek.after}
+        />
       </Slider>
       {!disabledSideButton.previous && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
