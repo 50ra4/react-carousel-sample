@@ -147,7 +147,7 @@ function TopPage() {
                 carouselKey="disabled-previous-button"
                 perView={3}
                 gap={1}
-                disabledSideButton={{ previous: true }}
+                disabledPreviousButton={true}
               >
                 {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />
@@ -160,20 +160,7 @@ function TopPage() {
                 carouselKey="disabled-next-button"
                 perView={3}
                 gap={1}
-                disabledSideButton={{ next: true }}
-              >
-                {Array8.map((count) => (
-                  <CarouselSampleSlide key={count} count={count} />
-                ))}
-              </StyledCarousel>
-            </StyledSubSection>
-
-            <StyledSubSection title="hide side button">
-              <StyledCarousel
-                carouselKey="disabled-side-button"
-                perView={3}
-                gap={1}
-                disabledSideButton={true}
+                disabledNextButton={true}
               >
                 {Array8.map((count) => (
                   <CarouselSampleSlide key={count} count={count} />

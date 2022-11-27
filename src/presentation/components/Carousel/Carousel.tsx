@@ -31,31 +31,6 @@ const persePeekOption = (peek?: PeekOption): Peek => {
   };
 };
 
-type SideButton = {
-  previous: boolean;
-  next: boolean;
-};
-type SideButtonOption = boolean | Partial<SideButton>;
-
-const perseSideButtonOption = (option?: SideButtonOption): SideButton => {
-  if (typeof option === 'object') {
-    return {
-      previous: option.previous ?? false,
-      next: option.next ?? false,
-    };
-  }
-  if (typeof option === 'boolean') {
-    return {
-      previous: option,
-      next: option,
-    };
-  }
-  return {
-    previous: false,
-    next: false,
-  };
-};
-
 type SliderOption = {
   slideWidth: number | null;
   sliderPaddingRight: number;
@@ -83,8 +58,10 @@ export type CarouselOptions = {
 
   /** hide Indicator. default: false */
   disabledIndicator?: boolean;
-  /** hide side navigation button. default: false */
-  disabledSideButton?: SideButtonOption;
+  /** hide PreviousButton. default: false */
+  disabledPreviousButton?: boolean;
+  /** hide NextButton. default: false */
+  disabledNextButton?: boolean;
 };
 
 export type CarouselProps = CarouselOptions & {
@@ -176,15 +153,11 @@ export function Carousel({
   bound,
   slideWidth,
   disabledIndicator,
-  disabledSideButton: disabledSideButtonOption,
+  disabledPreviousButton,
+  disabledNextButton,
   children,
 }: CarouselProps) {
   const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
-  const disabledSideButton = useMemo(
-    () => perseSideButtonOption(disabledSideButtonOption),
-    [disabledSideButtonOption],
-  );
-
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
   const [sliderOption, setSliderOption] = useState<SliderOption>({
@@ -355,12 +328,12 @@ export function Carousel({
           inserted={sliderOption.sliderPaddingRight || peek.after}
         />
       </Slider>
-      {!disabledSideButton.previous && canScrollToPrevious && (
+      {!disabledPreviousButton && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
           Go to previous slide
         </PreviewButton>
       )}
-      {!disabledSideButton.next && canScrollToNext && (
+      {!disabledNextButton && canScrollToNext && (
         <NextButton onClick={scrollToNext}>Go to next slide</NextButton>
       )}
       {!disabledIndicator && (
