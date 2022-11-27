@@ -292,7 +292,7 @@ export function Carousel({
       slideWidth,
       sliderPaddingRight: bound ? 0 : sliderWidth - slideWidth,
       gapWidth: gap,
-      multipleSlide: sliderWidth > slideWidth,
+      multipleSlide: sliderWidth !== slideWidth,
     });
   }, [bound, gap, slideWidth, sliderWidth]);
 
