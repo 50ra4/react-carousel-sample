@@ -1,2 +1,0 @@
-var s=Object.defineProperty;var o=(r,t)=>s(r,"name",{value:t,configurable:!0});import{C as a}from"./CarouselSampleSlide.a8a1cf2b.js";import{j as e}from"./jsx-runtime.11ab8e03.js";import"./styled-components.browser.esm.b0a0e410.js";import"./iframe.2d6b5938.js";const i=o((r,t)=>e("div",{style:{width:"300px",height:"200px"},children:e(r,{...t})}),"withStyleWrapper"),c={component:a,decorators:[i]},h={args:{count:1}},u=["Main"];export{h as Main,u as __namedExportsOrder,c as default};
-//# sourceMappingURL=CarouselSampleSlide.stories.dde48d5c.js.map
