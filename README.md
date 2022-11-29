@@ -2,6 +2,8 @@
 
 このプロジェクトは React で実装した Carousel の コンポーネントを作成したものです。
 
+![画面収録 2022-11-29 19 36 29](https://user-images.githubusercontent.com/48591598/204507396-abc39668-f290-4a47-b878-65ebc943c99e.gif)
+
 成果物は`github pages`に deploy しているので、以下の URL から確認できます。
 
 https://50ra4.github.io/react-carousel-sample/
