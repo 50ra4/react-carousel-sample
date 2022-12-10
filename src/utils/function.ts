@@ -27,3 +27,23 @@ export function debounce<Fn extends Callback>(callback: Fn, interval: number) {
     }, interval);
   };
 }
+
+export function audit<Fn extends Callback>(callback: Fn, interval: number) {
+  let timer: number | undefined;
+  let firstCalledAt: number | undefined = undefined;
+
+  return (...params: Parameters<Fn>) => {
+    clearTimeout(timer);
+
+    const current = +new Date();
+    if (!firstCalledAt) {
+      firstCalledAt = current;
+    }
+    const rest = interval - (current - firstCalledAt);
+
+    timer = window.setTimeout(() => {
+      callback(...params);
+      firstCalledAt = undefined;
+    }, rest);
+  };
+}
