@@ -1,4 +1,4 @@
-import { throttle, debounce } from './function';
+import { throttle, debounce, audit } from './function';
 
 /**
  * 指定したms待つ
@@ -59,13 +59,30 @@ const DEBOUNCE_TEST_CASES = TIMES.map(
   }),
 );
 
+/**
+ * auditのテストケース
+ */
+const AUDIT_TEST_CASES = TIMES.map(
+  (ms): TestCase => ({
+    ms,
+    shouldCall: TIMES_TO_CALL.includes(ms),
+    /** 500msに1回、1400msに1回、500ms間隔で実行する */
+    expected: {
+      calledTimes: ms < 500 ? 0 : ms < 1400 ? 1 : 2,
+      calledWith: ms < 500 ? 0 : ms < 1400 ? 300 : 1300,
+    },
+  }),
+);
+
 describe('utils/function', () => {
   describe.each([
     { name: 'throttle', cases: THROTTLE_TEST_CASES },
     { name: 'debounce', cases: DEBOUNCE_TEST_CASES },
+    { name: 'audit', cases: AUDIT_TEST_CASES },
   ] as const)('$name', ({ name, cases }) => {
     const callback = jest.fn((ms: number) => ms);
-    const testFn = name === 'throttle' ? throttle : debounce;
+    const testFn =
+      name === 'throttle' ? throttle : name === 'debounce' ? debounce : audit;
     const fn = testFn(callback, 500);
 
     it.each(cases)(
