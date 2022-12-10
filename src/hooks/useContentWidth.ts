@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { audit } from 'src/utils/function';
 
 export function useContentWidth<T extends HTMLElement = HTMLElement>(
   ref: React.RefObject<T | null>,
@@ -10,8 +11,6 @@ export function useContentWidth<T extends HTMLElement = HTMLElement>(
     if (width === perviousWidth.current) {
       return;
     }
-    // TODO: add throttle
-    console.log(`current width: ${width}px`);
     setWidth(width);
     perviousWidth.current = width;
   }, []);
@@ -21,9 +20,10 @@ export function useContentWidth<T extends HTMLElement = HTMLElement>(
       return;
     }
 
+    const update = audit(updatedWidth, 250);
     const callback: ResizeObserverCallback = (entries) => {
       entries.forEach((entry) => {
-        updatedWidth(entry.contentRect.width);
+        update(entry.contentRect.width);
       });
     };
 
