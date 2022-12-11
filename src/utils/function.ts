@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Callback = (...args: any[]) => any;
+type Func = (...args: any[]) => any;
 
-export function throttle<Fn extends Callback>(callback: Fn, interval: number) {
+export function throttle<Fn extends Func>(fn: Fn, interval: number) {
   let lastUpdatedAt = -1;
 
   return (...params: Parameters<Fn>) => {
@@ -13,22 +13,22 @@ export function throttle<Fn extends Callback>(callback: Fn, interval: number) {
     }
 
     lastUpdatedAt = currentAt;
-    callback(...params);
+    fn(...params);
   };
 }
 
-export function debounce<Fn extends Callback>(callback: Fn, interval: number) {
+export function debounce<Fn extends Func>(fn: Fn, interval: number) {
   let timer: number | undefined;
 
   return (...params: Parameters<Fn>) => {
     clearTimeout(timer);
     timer = window.setTimeout(() => {
-      callback(...params);
+      fn(...params);
     }, interval);
   };
 }
 
-export function audit<Fn extends Callback>(callback: Fn, interval: number) {
+export function audit<Fn extends Func>(fn: Fn, interval: number) {
   let timer: number | undefined;
   let firstCalledAt: number | undefined = undefined;
 
@@ -42,7 +42,7 @@ export function audit<Fn extends Callback>(callback: Fn, interval: number) {
     const rest = interval - (current - firstCalledAt);
 
     timer = window.setTimeout(() => {
-      callback(...params);
+      fn(...params);
       firstCalledAt = undefined;
     }, rest);
   };
