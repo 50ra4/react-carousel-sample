@@ -34,11 +34,6 @@ const persePeekOption = (peek?: PeekOption): Peek => {
   }
 };
 
-type SliderOption = {
-  slideWidth: number | null;
-  sliderPaddingRight: number;
-};
-
 export type CarouselOptions = {
   /** autoplay milliseconds. default: no autoplay */
   autoplay?: number;
@@ -152,7 +147,7 @@ export function Carousel({
   startAt,
   rewind = true,
   bound,
-  slideWidth,
+  slideWidth: slideWidthOption,
   disabledIndicator,
   disabledPreviousButton,
   disabledNextButton,
@@ -161,13 +156,6 @@ export function Carousel({
   const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const [sliderOption, setSliderOption] = useState<SliderOption>({
-    slideWidth: null,
-    sliderPaddingRight: 0,
-  });
-
-  const gapWidth = !!perView && perView > 1 ? gap : 0;
-  const isMultipleSlide = sliderWidth !== sliderOption.slideWidth;
 
   const [isHover, setIsHover] = useState(false);
 
@@ -257,44 +245,46 @@ export function Carousel({
   }, [autoplay, canScrollToNext, isHover, scrollToNext]);
 
   useEffect(() => {
-    if (!perView || !slideWidth) {
-      return;
-    }
-    throw new Error('both perView and slideWidth cannot be set.');
-  }, [perView, slideWidth]);
-
-  useEffect(() => {
-    if (!perView) {
-      return;
-    }
-    if (perView < 1) {
+    if (perView && perView < 1) {
       throw new Error('perView must be 1 or more.');
     }
+    if (perView && slideWidthOption) {
+      throw new Error('both perView and slideWidth cannot be set.');
+    }
+  }, [perView, slideWidthOption]);
+
+  const { slideWidth, sliderPaddingRight } = useMemo((): {
+    slideWidth?: number;
+    sliderPaddingRight: number;
+  } => {
+    const initial = {
+      sliderPaddingRight: 0,
+    };
     if (!sliderWidth) {
-      return;
+      return initial;
     }
 
-    const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
-    const perWidth = (sliderWidth - gapTotal) / perView;
-
-    setSliderOption({
-      slideWidth: perWidth,
-      sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
-    });
-  }, [bound, gap, perView, sliderWidth]);
-
-  useEffect(() => {
-    if (!slideWidth) {
-      return;
+    if (perView) {
+      const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
+      const perWidth = (sliderWidth - gapTotal) / perView;
+      return {
+        slideWidth: perWidth,
+        sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
+      };
     }
-    if (!sliderWidth) {
-      return;
+
+    if (slideWidthOption) {
+      return {
+        slideWidth: slideWidthOption,
+        sliderPaddingRight: bound ? 0 : sliderWidth - slideWidthOption,
+      };
     }
-    setSliderOption({
-      slideWidth,
-      sliderPaddingRight: bound ? 0 : sliderWidth - slideWidth,
-    });
-  }, [bound, gap, slideWidth, sliderWidth]);
+
+    return initial;
+  }, [bound, gap, perView, slideWidthOption, sliderWidth]);
+
+  const gapWidth = !!perView && perView > 1 ? gap : 0;
+  const isMultipleSlide = sliderWidth !== slideWidth;
 
   useEffect(() => {
     if (!startAt) {
@@ -315,18 +305,12 @@ export function Carousel({
     >
       <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
-          <Slide
-            key={slideId}
-            id={slideId}
-            width={sliderOption.slideWidth ?? undefined}
-          >
+          <Slide key={slideId} id={slideId} width={slideWidth}>
             {child}
             <Snapper isMultipleSlide={isMultipleSlide} />
           </Slide>
         ))}
-        <SliderPadding
-          inserted={sliderOption.sliderPaddingRight || peek.after}
-        />
+        <SliderPadding inserted={sliderPaddingRight || peek.after} />
       </Slider>
       {!disabledPreviousButton && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
