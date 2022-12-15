@@ -13,22 +13,25 @@ type Peek = { before: number; after: number };
 type PeekOption = number | Partial<Peek>;
 
 const persePeekOption = (peek?: PeekOption): Peek => {
-  if (typeof peek === 'object') {
-    return {
-      before: peek.before ?? 0,
-      after: peek.after ?? 0,
-    };
+  switch (typeof peek) {
+    case 'object':
+      return {
+        before: peek.before ?? 0,
+        after: peek.after ?? 0,
+      };
+
+    case 'number':
+      return {
+        before: peek,
+        after: peek,
+      };
+
+    default:
+      return {
+        before: 0,
+        after: 0,
+      };
   }
-  if (typeof peek === 'number') {
-    return {
-      before: peek,
-      after: peek,
-    };
-  }
-  return {
-    before: 0,
-    after: 0,
-  };
 };
 
 type SliderOption = {
