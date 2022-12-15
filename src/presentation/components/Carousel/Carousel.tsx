@@ -37,7 +37,6 @@ const persePeekOption = (peek?: PeekOption): Peek => {
 type SliderOption = {
   slideWidth: number | null;
   sliderPaddingRight: number;
-  multipleSlide?: boolean;
 };
 
 export type CarouselOptions = {
@@ -162,12 +161,13 @@ export function Carousel({
   const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const gapWidth = !!perView && perView > 1 ? gap : 0;
-
   const [sliderOption, setSliderOption] = useState<SliderOption>({
     slideWidth: null,
     sliderPaddingRight: 0,
   });
+
+  const gapWidth = !!perView && perView > 1 ? gap : 0;
+  const isMultipleSlide = sliderWidth !== sliderOption.slideWidth;
 
   const [isHover, setIsHover] = useState(false);
 
@@ -280,7 +280,6 @@ export function Carousel({
     setSliderOption({
       slideWidth: perWidth,
       sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
-      multipleSlide: perView > 1,
     });
   }, [bound, gap, perView, sliderWidth]);
 
@@ -294,7 +293,6 @@ export function Carousel({
     setSliderOption({
       slideWidth,
       sliderPaddingRight: bound ? 0 : sliderWidth - slideWidth,
-      multipleSlide: sliderWidth !== slideWidth,
     });
   }, [bound, gap, slideWidth, sliderWidth]);
 
@@ -323,7 +321,7 @@ export function Carousel({
             width={sliderOption.slideWidth ?? undefined}
           >
             {child}
-            <Snapper multipleSlide={!!sliderOption.multipleSlide} />
+            <Snapper isMultipleSlide={isMultipleSlide} />
           </Slide>
         ))}
         <SliderPadding
@@ -364,14 +362,14 @@ const SliderPadding = styled.div<{ inserted: number }>`
   padding-left: ${({ inserted }) => inserted}px;
 `;
 
-const Snapper = styled.div<{ multipleSlide?: boolean }>`
+const Snapper = styled.div<{ isMultipleSlide?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  scroll-snap-align: ${({ multipleSlide }) =>
-    multipleSlide ? 'start' : 'center'};
+  scroll-snap-align: ${({ isMultipleSlide }) =>
+    isMultipleSlide ? 'start' : 'center'};
 `;
 
 const Slide = styled.li<{ width?: number }>`
