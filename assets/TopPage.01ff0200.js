@@ -1,4 +1,4 @@
-import{s as i,j as m,a as t,r as d,R as U}from"./index.ee1d0c7d.js";import{u as Z,P as ee}from"./PageTemplate.7deaad73.js";function N({className:e,onClick:r,children:l}){return m(te,{className:e,onClick:r,children:[t(re,{}),l]})}const te=i.button`
+import{s as i,j as m,a as t,r as d,R as U}from"./index.f2488050.js";import{u as Z,P as ee}from"./PageTemplate.f7a1ee5a.js";function N({className:e,onClick:r,children:l}){return m(te,{className:e,onClick:r,children:[t(re,{}),l]})}const te=i.button`
   cursor: pointer;
   width: 32px;
   height: 32px;
