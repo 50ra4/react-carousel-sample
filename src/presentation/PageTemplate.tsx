@@ -38,4 +38,5 @@ const Title = styled.h2`
   padding: 8px 0;
   position: sticky;
   top: 0;
+  z-index: 1200;
 `;
