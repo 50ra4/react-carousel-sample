@@ -34,7 +34,6 @@ const persePeekOption = (peek?: PeekOption): Peek => {
 type SliderOption = {
   slideWidth: number | null;
   sliderPaddingRight: number;
-  gapWidth: number;
   multipleSlide?: boolean;
 };
 
@@ -160,11 +159,13 @@ export function Carousel({
   const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
+  const gapWidth = !!perView && perView > 1 ? gap : 0;
+
   const [sliderOption, setSliderOption] = useState<SliderOption>({
     slideWidth: null,
     sliderPaddingRight: 0,
-    gapWidth: 0,
   });
+
   const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
@@ -276,7 +277,6 @@ export function Carousel({
     setSliderOption({
       slideWidth: perWidth,
       sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
-      gapWidth: perView > 1 ? gap : 0,
       multipleSlide: perView > 1,
     });
   }, [bound, gap, perView, sliderWidth]);
@@ -291,7 +291,6 @@ export function Carousel({
     setSliderOption({
       slideWidth,
       sliderPaddingRight: bound ? 0 : sliderWidth - slideWidth,
-      gapWidth: gap,
       multipleSlide: sliderWidth !== slideWidth,
     });
   }, [bound, gap, slideWidth, sliderWidth]);
@@ -313,7 +312,7 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider ref={sliderRef} gapWidth={sliderOption.gapWidth} peek={peek}>
+      <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
           <Slide
             key={slideId}
