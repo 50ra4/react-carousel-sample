@@ -380,10 +380,10 @@ const Slider = styled.ol<SliderProps>`
     margin-left: ${({ gapWidth }) => gapWidth ?? 0}px;
   }
 
-  scroll-padding: ${({ peek: { before, after } }) =>
-    !before && !after ? '0' : `0 ${after}px 0 ${before}px`};
-  padding: ${({ peek: { before, after } }) =>
-    !before && !after ? '0' : `0 ${after}px 0 ${before}px`};
+  scroll-padding-left: ${({ peek: { before } }) => before}px;
+  scroll-padding-right: ${({ peek: { after } }) => after}px;
+  padding-left: ${({ peek: { before } }) => before}px;
+  padding-right: ${({ peek: { after } }) => after}px;
 `;
 
 const Indicator = styled.div`
