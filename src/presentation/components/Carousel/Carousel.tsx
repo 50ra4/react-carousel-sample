@@ -13,29 +13,25 @@ type Peek = { before: number; after: number };
 type PeekOption = number | Partial<Peek>;
 
 const persePeekOption = (peek?: PeekOption): Peek => {
-  if (typeof peek === 'object') {
-    return {
-      before: peek.before ?? 0,
-      after: peek.after ?? 0,
-    };
-  }
-  if (typeof peek === 'number') {
-    return {
-      before: peek,
-      after: peek,
-    };
-  }
-  return {
-    before: 0,
-    after: 0,
-  };
-};
+  switch (typeof peek) {
+    case 'object':
+      return {
+        before: peek.before ?? 0,
+        after: peek.after ?? 0,
+      };
 
-type SliderOption = {
-  slideWidth: number | null;
-  sliderPaddingRight: number;
-  gapWidth: number;
-  multipleSlide?: boolean;
+    case 'number':
+      return {
+        before: peek,
+        after: peek,
+      };
+
+    default:
+      return {
+        before: 0,
+        after: 0,
+      };
+  }
 };
 
 export type CarouselOptions = {
@@ -151,7 +147,7 @@ export function Carousel({
   startAt,
   rewind = true,
   bound,
-  slideWidth,
+  slideWidth: slideWidthOption,
   disabledIndicator,
   disabledPreviousButton,
   disabledNextButton,
@@ -160,11 +156,7 @@ export function Carousel({
   const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
-  const [sliderOption, setSliderOption] = useState<SliderOption>({
-    slideWidth: null,
-    sliderPaddingRight: 0,
-    gapWidth: 0,
-  });
+
   const [isHover, setIsHover] = useState(false);
 
   const scrollToSlide = useCallback(
@@ -253,48 +245,46 @@ export function Carousel({
   }, [autoplay, canScrollToNext, isHover, scrollToNext]);
 
   useEffect(() => {
-    if (!perView || !slideWidth) {
-      return;
-    }
-    throw new Error('both perView and slideWidth cannot be set.');
-  }, [perView, slideWidth]);
-
-  useEffect(() => {
-    if (!perView) {
-      return;
-    }
-    if (perView < 1) {
+    if (perView && perView < 1) {
       throw new Error('perView must be 1 or more.');
     }
+    if (perView && slideWidthOption) {
+      throw new Error('both perView and slideWidth cannot be set.');
+    }
+  }, [perView, slideWidthOption]);
+
+  const { slideWidth, sliderPaddingRight } = useMemo((): {
+    slideWidth?: number;
+    sliderPaddingRight: number;
+  } => {
+    const initial = {
+      sliderPaddingRight: 0,
+    };
     if (!sliderWidth) {
-      return;
+      return initial;
     }
 
-    const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
-    const perWidth = (sliderWidth - gapTotal) / perView;
-
-    setSliderOption({
-      slideWidth: perWidth,
-      sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
-      gapWidth: perView > 1 ? gap : 0,
-      multipleSlide: perView > 1,
-    });
-  }, [bound, gap, perView, sliderWidth]);
-
-  useEffect(() => {
-    if (!slideWidth) {
-      return;
+    if (perView) {
+      const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
+      const perWidth = (sliderWidth - gapTotal) / perView;
+      return {
+        slideWidth: perWidth,
+        sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
+      };
     }
-    if (!sliderWidth) {
-      return;
+
+    if (slideWidthOption) {
+      return {
+        slideWidth: slideWidthOption,
+        sliderPaddingRight: bound ? 0 : sliderWidth - slideWidthOption,
+      };
     }
-    setSliderOption({
-      slideWidth,
-      sliderPaddingRight: bound ? 0 : sliderWidth - slideWidth,
-      gapWidth: gap,
-      multipleSlide: sliderWidth !== slideWidth,
-    });
-  }, [bound, gap, slideWidth, sliderWidth]);
+
+    return initial;
+  }, [bound, gap, perView, slideWidthOption, sliderWidth]);
+
+  const gapWidth = !!perView && perView > 1 ? gap : 0;
+  const isMultipleSlide = sliderWidth !== slideWidth;
 
   useEffect(() => {
     if (!startAt) {
@@ -313,20 +303,14 @@ export function Carousel({
         setIsHover(false);
       }}
     >
-      <Slider ref={sliderRef} gapWidth={sliderOption.gapWidth} peek={peek}>
+      <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
-          <Slide
-            key={slideId}
-            id={slideId}
-            width={sliderOption.slideWidth ?? undefined}
-          >
+          <Slide key={slideId} id={slideId} width={slideWidth}>
             {child}
-            <Snapper multipleSlide={!!sliderOption.multipleSlide} />
+            <Snapper isMultipleSlide={isMultipleSlide} />
           </Slide>
         ))}
-        <SliderPadding
-          inserted={sliderOption.sliderPaddingRight || peek.after}
-        />
+        <SliderPadding inserted={sliderPaddingRight || peek.after} />
       </Slider>
       {!disabledPreviousButton && canScrollToPrevious && (
         <PreviewButton onClick={scrollToPrevious}>
@@ -362,14 +346,14 @@ const SliderPadding = styled.div<{ inserted: number }>`
   padding-left: ${({ inserted }) => inserted}px;
 `;
 
-const Snapper = styled.div<{ multipleSlide?: boolean }>`
+const Snapper = styled.div<{ isMultipleSlide?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  scroll-snap-align: ${({ multipleSlide }) =>
-    multipleSlide ? 'start' : 'center'};
+  scroll-snap-align: ${({ isMultipleSlide }) =>
+    isMultipleSlide ? 'start' : 'center'};
 `;
 
 const Slide = styled.li<{ width?: number }>`
@@ -396,10 +380,10 @@ const Slider = styled.ol<SliderProps>`
     margin-left: ${({ gapWidth }) => gapWidth ?? 0}px;
   }
 
-  scroll-padding: ${({ peek: { before, after } }) =>
-    !before && !after ? '0' : `0 ${after}px 0 ${before}px`};
-  padding: ${({ peek: { before, after } }) =>
-    !before && !after ? '0' : `0 ${after}px 0 ${before}px`};
+  scroll-padding-left: ${({ peek: { before } }) => before}px;
+  scroll-padding-right: ${({ peek: { after } }) => after}px;
+  padding-left: ${({ peek: { before } }) => before}px;
+  padding-right: ${({ peek: { after } }) => after}px;
 `;
 
 const Indicator = styled.div`
