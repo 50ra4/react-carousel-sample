@@ -1,18 +1,30 @@
 import { useEffect, useState } from 'react';
 import { audit } from 'src/utils/function';
 
-type ResizeObserverEntryObject = {
-  borderBoxSize: ResizeObserverSize | null;
-  contentBoxSize: ResizeObserverSize | null;
-  contentRect: DOMRectReadOnly | null;
-  devicePixelContentBoxSize: ResizeObserverSize | null;
+type ResizeObserverSizeObject = {
+  blockSize: number;
+  inlineSize: number;
 };
 
-const toResizeObserverSize = (
-  size: Readonly<ResizeObserverSize[] | ResizeObserverSize>,
-): ResizeObserverSize | null =>
-  Array.isArray(size) ? size?.[0] ?? null : size;
+type ResizeObserverEntryObject = {
+  borderBoxSize: ResizeObserverSizeObject | null;
+  contentBoxSize: ResizeObserverSizeObject | null;
+  contentRect: DOMRectReadOnly | null;
+  devicePixelContentBoxSize: ResizeObserverSizeObject | null;
+};
 
+const toResizeObserverSizeObject = (
+  size: Readonly<ResizeObserverSize[] | ResizeObserverSize>,
+): ResizeObserverSizeObject | null => {
+  const [head] = size instanceof Array ? size : [size];
+  if (!head) {
+    return null;
+  }
+  return {
+    blockSize: head.blockSize,
+    inlineSize: head.inlineSize,
+  };
+};
 type Options = {
   duration: number;
 };
@@ -30,10 +42,10 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
 
     const update = audit((entry: ResizeObserverEntry) => {
       setState({
-        borderBoxSize: toResizeObserverSize(entry.borderBoxSize),
-        contentBoxSize: toResizeObserverSize(entry.contentBoxSize),
+        borderBoxSize: toResizeObserverSizeObject(entry.borderBoxSize),
+        contentBoxSize: toResizeObserverSizeObject(entry.contentBoxSize),
         contentRect: entry.contentRect,
-        devicePixelContentBoxSize: toResizeObserverSize(
+        devicePixelContentBoxSize: toResizeObserverSizeObject(
           entry.devicePixelContentBoxSize,
         ),
       });
@@ -56,11 +68,6 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
       observer.unobserve(element);
     };
   }, [duration, ref]);
-
-  // TODO: remove
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
 
   return state;
 }
