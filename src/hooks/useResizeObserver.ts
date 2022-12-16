@@ -40,9 +40,12 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
     }, duration);
 
     const callback: ResizeObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        update(entry);
-      });
+      const target = entries.find((entry) => entry.target === ref.current);
+      if (!target) {
+        return;
+      }
+
+      update(target);
     };
 
     const element = ref.current;
