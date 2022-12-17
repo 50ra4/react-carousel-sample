@@ -11,9 +11,7 @@ export function useContentWidth<T extends HTMLElement = HTMLElement>(
 ) {
   const result = useResizeObserver(ref, { duration });
 
-  return useMemo(
-    () =>
-      result?.borderBoxSize?.inlineSize ?? result?.contentRect?.width ?? null,
-    [result],
+  return (
+    result?.borderBoxSize?.inlineSize ?? result?.contentRect?.width ?? null
   );
 }
