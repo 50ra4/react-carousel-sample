@@ -11,6 +11,7 @@ type ResizeObserverEntryObject = {
   contentBoxSize: ResizeObserverSizeObject | null;
   contentRect: DOMRectReadOnly | null;
   devicePixelContentBoxSize: ResizeObserverSizeObject | null;
+  target: HTMLElement;
 };
 
 const toResizeObserverSizeObject = (
@@ -38,7 +39,8 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
   const [state, setState] = useState<ResizeObserverEntryObject | null>(null);
 
   useEffect(() => {
-    if (!ref.current) {
+    const target = ref.current;
+    if (!target) {
       return;
     }
 
@@ -50,16 +52,17 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
         devicePixelContentBoxSize: toResizeObserverSizeObject(
           entry.devicePixelContentBoxSize,
         ),
+        target,
       });
     }, duration);
 
     const callback: ResizeObserverCallback = (entries) => {
-      const target = entries.find((entry) => entry.target === ref.current);
-      if (!target) {
+      const targetEntry = entries.find((entry) => entry.target === ref.current);
+      if (!targetEntry) {
         return;
       }
 
-      update(target);
+      update(targetEntry);
     };
 
     const element = ref.current;
