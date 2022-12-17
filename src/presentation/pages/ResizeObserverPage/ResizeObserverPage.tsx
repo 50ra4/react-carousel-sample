@@ -85,12 +85,47 @@ function ObservedBox({
   return (
     <Container {...props} ref={ref} className={className}>
       <p>box-sizing: {props.contentBox ? 'content-box' : 'border-box'}</p>
-      {definitionList.map(({ title, list }) => (
-        <DefinitionSection key={title} title={title} list={list} />
-      ))}
+      <div>
+        {definitionList.map(({ title, list }) => (
+          <DefinitionSection key={title} title={title} list={list} />
+        ))}
+      </div>
     </Container>
   );
 }
+
+const Container = styled.div<Props>`
+  width: 90%;
+  padding: 10px 15px 20px 5px;
+  box-sizing: ${({ contentBox }) =>
+    contentBox ? 'content-box' : 'border-box'};
+  & > * {
+    box-sizing: border-box;
+  }
+  border: 5px solid #000;
+  background-color: ${({ color }) => color};
+  margin-top: 8px;
+
+  & > p {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  & > div {
+    display: flex;
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin: 0 -8px -8px 0;
+
+    & > * {
+      margin: 0 8px 8px 0;
+      width: calc(1280px / 2);
+    }
+  }
+`;
 
 type Definition = { title: string; list: { name: string; size: number }[] };
 
@@ -143,25 +178,6 @@ const StyledSection = styled.section`
     & > div + div {
       border-top: 1px solid #000;
     }
-  }
-`;
-
-const Container = styled.div<Props>`
-  width: 90%;
-  padding: 10px 15px 20px 5px;
-  box-sizing: ${({ contentBox }) =>
-    contentBox ? 'content-box' : 'border-box'};
-  & > * {
-    box-sizing: border-box;
-  }
-  border: 5px solid #000;
-  background-color: ${({ color }) => color};
-  margin-top: 8px;
-
-  & > p {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 4px;
   }
 `;
 
