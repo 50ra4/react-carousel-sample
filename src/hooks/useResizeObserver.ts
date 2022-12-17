@@ -20,9 +20,11 @@ const toResizeObserverSizeObject = (
   if (!head) {
     return null;
   }
+
+  const { blockSize, inlineSize } = head;
   return {
-    blockSize: head.blockSize,
-    inlineSize: head.inlineSize,
+    blockSize,
+    inlineSize,
   };
 };
 type Options = {
