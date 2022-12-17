@@ -10,19 +10,12 @@ type ResizeObserverEntryObject = {
 };
 
 const toResizeObserverSize = (
-  size: Readonly<ResizeObserverSize[] | ResizeObserverSize>,
+  size: Readonly<ResizeObserverSize[]> | ResizeObserverSize,
 ): ResizeObserverSize | null => {
-  const [head] = size instanceof Array ? size : [size];
-  if (!head) {
-    return null;
-  }
-
-  const { blockSize, inlineSize } = head;
-  return {
-    blockSize,
-    inlineSize,
-  };
+  const [head] = size instanceof ResizeObserverSize ? [size] : size;
+  return !head ? null : head;
 };
+
 type Options = {
   duration: number;
 };
@@ -52,7 +45,7 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
     }, duration);
 
     const callback: ResizeObserverCallback = (entries) => {
-      const targetEntry = entries.find((entry) => entry.target === ref.current);
+      const targetEntry = entries.find((entry) => entry.target === target);
       if (!targetEntry) {
         return;
       }
