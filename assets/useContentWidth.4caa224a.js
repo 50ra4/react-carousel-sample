@@ -1,1 +1,0 @@
-import{u as s}from"./PageTemplate.37dfa1d8.js";function d(r,{duration:c=250}={}){var n,i,o,t;const e=s(r,{duration:c});return(t=(o=(n=e==null?void 0:e.borderBoxSize)==null?void 0:n.inlineSize)!=null?o:(i=e==null?void 0:e.contentRect)==null?void 0:i.width)!=null?t:null}export{d as u};
