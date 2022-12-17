@@ -1,7 +1,11 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useResizeObserver } from 'src/hooks/useResizeObserver';
+import {
+  ResizeObserverEntryObject,
+  useResizeObserver,
+} from 'src/hooks/useResizeObserver';
 import { PageTemplate } from 'src/presentation/PageTemplate';
+import { audit } from 'src/utils/function';
 
 function ResizeObserverPage() {
   return (
@@ -32,36 +36,40 @@ function ObservedBox({
   className?: string;
 } & Props) {
   const ref = useRef(null);
-  const entry = useResizeObserver(ref, { duration: 100 });
+  const [state, setState] = useState<ResizeObserverEntryObject | null>(null);
+
+  const callback = useMemo(() => audit(setState, 100), []);
+
+  useResizeObserver({ ref, callback });
 
   const definitionList = useMemo((): Definition[] => {
-    if (!entry) {
+    if (!state) {
       return [];
     }
 
-    const borderBoxSize = entry.borderBoxSize
+    const borderBoxSize = state.borderBoxSize
       ? {
           title: 'borderBoxSize',
-          list: resizeObserverSize2NameSizeArray(entry.borderBoxSize),
+          list: resizeObserverSize2NameSizeArray(state.borderBoxSize),
         }
       : null;
-    const contentBoxSize = entry.contentBoxSize
+    const contentBoxSize = state.contentBoxSize
       ? {
           title: 'contentBoxSize',
-          list: resizeObserverSize2NameSizeArray(entry.contentBoxSize),
+          list: resizeObserverSize2NameSizeArray(state.contentBoxSize),
         }
       : null;
-    const contentRect = entry.contentRect
+    const contentRect = state.contentRect
       ? {
           title: 'contentBoxSize',
-          list: toNameSize(entry.contentRect.toJSON()),
+          list: toNameSize(state.contentRect.toJSON()),
         }
       : null;
-    const devicePixelContentBoxSize = entry.devicePixelContentBoxSize
+    const devicePixelContentBoxSize = state.devicePixelContentBoxSize
       ? {
           title: 'devicePixelContentBoxSize',
           list: resizeObserverSize2NameSizeArray(
-            entry.devicePixelContentBoxSize,
+            state.devicePixelContentBoxSize,
           ),
         }
       : null;
@@ -72,7 +80,7 @@ function ObservedBox({
       contentRect,
       devicePixelContentBoxSize,
     ].filter((v): v is NonNullable<typeof v> => !!v);
-  }, [entry]);
+  }, [state]);
 
   return (
     <Container {...props} ref={ref} className={className}>
