@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { audit } from 'src/utils/function';
+import { useEffect } from 'react';
 
-type ResizeObserverEntryObject = {
+export type ResizeObserverEntryObject = {
   borderBoxSize: ResizeObserverSize | null;
   contentBoxSize: ResizeObserverSize | null;
   contentRect: DOMRectReadOnly | null;
@@ -16,24 +15,26 @@ const toResizeObserverSize = (
   return !head ? null : head;
 };
 
-type Options = {
-  duration: number;
-};
-
-export function useResizeObserver<T extends HTMLElement = HTMLElement>(
-  ref: React.RefObject<T | null>,
-  { duration }: Options = { duration: 50 },
-) {
-  const [state, setState] = useState<ResizeObserverEntryObject | null>(null);
-
+export function useResizeObserver<T extends HTMLElement = HTMLElement>({
+  ref,
+  callback,
+}: {
+  ref: React.RefObject<T | null>;
+  callback: (value: ResizeObserverEntryObject) => void;
+}) {
   useEffect(() => {
     const target = ref.current;
     if (!target) {
       return;
     }
 
-    const update = audit((entry: ResizeObserverEntry) => {
-      setState({
+    const callbackFn: ResizeObserverCallback = (entries) => {
+      const entry = entries.find((entry) => entry.target === target);
+      if (!entry) {
+        return;
+      }
+
+      callback({
         borderBoxSize: toResizeObserverSize(entry.borderBoxSize),
         contentBoxSize: toResizeObserverSize(entry.contentBoxSize),
         contentRect: entry.contentRect,
@@ -42,25 +43,14 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
         ),
         target,
       });
-    }, duration);
-
-    const callback: ResizeObserverCallback = (entries) => {
-      const targetEntry = entries.find((entry) => entry.target === target);
-      if (!targetEntry) {
-        return;
-      }
-
-      update(targetEntry);
     };
 
     const element = ref.current;
-    const observer = new ResizeObserver(callback);
+    const observer = new ResizeObserver(callbackFn);
     observer.observe(element);
 
     return () => {
       observer.unobserve(element);
     };
-  }, [duration, ref]);
-
-  return state;
+  }, [callback, ref]);
 }
