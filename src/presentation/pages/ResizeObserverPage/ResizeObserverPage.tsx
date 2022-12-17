@@ -130,7 +130,7 @@ const StyledSection = styled.section`
 
 const Container = styled.div<Props>`
   width: 90%;
-  padding: 10px;
+  padding: 10px 15px 20px 5px;
   box-sizing: ${({ contentBox }) =>
     contentBox ? 'content-box' : 'border-box'};
   & > * {
