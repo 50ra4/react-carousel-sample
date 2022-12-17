@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   ResizeObserverEntryObject,
   useResizeObserver,
@@ -9,15 +9,33 @@ type Options = {
   duration?: number;
 };
 
+const toWidth = ({ borderBoxSize, contentRect }: ResizeObserverEntryObject) =>
+  borderBoxSize?.inlineSize ?? contentRect?.width ?? null;
+
 export function useContentWidth<T extends HTMLElement = HTMLElement>(
   ref: React.RefObject<T | null>,
   { duration = 250 }: Options = {},
 ) {
-  const [state, setState] = useState<ResizeObserverEntryObject | null>(null);
+  const [width, setWidth] = useState<number | null>(null);
+  const previousWidth = useRef(0);
 
-  const callback = useMemo(() => audit(setState, duration), [duration]);
+  const callback = useMemo(
+    () =>
+      audit((entry: ResizeObserverEntryObject) => {
+        const width = toWidth(entry);
+        if (!width) {
+          return;
+        }
+        if (previousWidth.current === width) {
+          return;
+        }
+        previousWidth.current = width;
+        setWidth(width);
+      }, duration),
+    [duration],
+  );
 
   useResizeObserver({ ref, callback });
 
-  return state?.borderBoxSize?.inlineSize ?? state?.contentRect?.width ?? null;
+  return width;
 }
