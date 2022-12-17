@@ -20,6 +20,11 @@ type Props = {
 const toNameSize = <T extends Record<string, number>>(obj: T) =>
   Object.entries(obj).map(([name, size]) => ({ name, size }));
 
+const resizeObserverSize2NameSizeArray = (size: ResizeObserverSize) => {
+  const { blockSize, inlineSize } = size;
+  return toNameSize({ blockSize, inlineSize });
+};
+
 function ObservedBox({
   className,
   ...props
@@ -35,12 +40,15 @@ function ObservedBox({
     }
 
     const borderBoxSize = entry.borderBoxSize
-      ? { title: 'borderBoxSize', list: toNameSize(entry.borderBoxSize) }
+      ? {
+          title: 'borderBoxSize',
+          list: resizeObserverSize2NameSizeArray(entry.borderBoxSize),
+        }
       : null;
     const contentBoxSize = entry.contentBoxSize
       ? {
           title: 'contentBoxSize',
-          list: toNameSize(entry.contentBoxSize),
+          list: resizeObserverSize2NameSizeArray(entry.contentBoxSize),
         }
       : null;
     const contentRect = entry.contentRect
@@ -52,7 +60,9 @@ function ObservedBox({
     const devicePixelContentBoxSize = entry.devicePixelContentBoxSize
       ? {
           title: 'devicePixelContentBoxSize',
-          list: toNameSize(entry.devicePixelContentBoxSize),
+          list: resizeObserverSize2NameSizeArray(
+            entry.devicePixelContentBoxSize,
+          ),
         }
       : null;
 

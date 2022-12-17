@@ -1,22 +1,17 @@
 import { useEffect, useState } from 'react';
 import { audit } from 'src/utils/function';
 
-type ResizeObserverSizeObject = {
-  blockSize: number;
-  inlineSize: number;
-};
-
 type ResizeObserverEntryObject = {
-  borderBoxSize: ResizeObserverSizeObject | null;
-  contentBoxSize: ResizeObserverSizeObject | null;
+  borderBoxSize: ResizeObserverSize | null;
+  contentBoxSize: ResizeObserverSize | null;
   contentRect: DOMRectReadOnly | null;
-  devicePixelContentBoxSize: ResizeObserverSizeObject | null;
+  devicePixelContentBoxSize: ResizeObserverSize | null;
   target: HTMLElement;
 };
 
-const toResizeObserverSizeObject = (
+const toResizeObserverSize = (
   size: Readonly<ResizeObserverSize[] | ResizeObserverSize>,
-): ResizeObserverSizeObject | null => {
+): ResizeObserverSize | null => {
   const [head] = size instanceof Array ? size : [size];
   if (!head) {
     return null;
@@ -46,10 +41,10 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
 
     const update = audit((entry: ResizeObserverEntry) => {
       setState({
-        borderBoxSize: toResizeObserverSizeObject(entry.borderBoxSize),
-        contentBoxSize: toResizeObserverSizeObject(entry.contentBoxSize),
+        borderBoxSize: toResizeObserverSize(entry.borderBoxSize),
+        contentBoxSize: toResizeObserverSize(entry.contentBoxSize),
         contentRect: entry.contentRect,
-        devicePixelContentBoxSize: toResizeObserverSizeObject(
+        devicePixelContentBoxSize: toResizeObserverSize(
           entry.devicePixelContentBoxSize,
         ),
         target,
