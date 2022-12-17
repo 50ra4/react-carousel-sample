@@ -122,7 +122,6 @@ const Container = styled.div<Props>`
 
     & > * {
       margin: 0 8px 8px 0;
-      width: calc(1280px / 2);
     }
   }
 `;
@@ -173,6 +172,7 @@ const StyledSection = styled.section`
       & > dd {
         border-left: 1px solid #000;
         text-align: right;
+        flex: 1 1 auto;
       }
     }
     & > div + div {
