@@ -1,4 +1,4 @@
-import{s as i,j as x,a as t,r as p,R as ee}from"./index.7aa945fa.js";import{u as te}from"./useContentWidth.55de7241.js";import{P as re}from"./PageTemplate.6b811ce1.js";function F({className:e,onClick:r,children:s}){return x(ie,{className:e,onClick:r,children:[t(ne,{}),s]})}const ie=i.button`
+import{s as i,j as x,a as t,r as p,R as ee}from"./index.39835e62.js";import{u as te}from"./useContentWidth.e53e31c9.js";import{P as re}from"./PageTemplate.99ccd868.js";function F({className:e,onClick:r,children:s}){return x(ie,{className:e,onClick:r,children:[t(ne,{}),s]})}const ie=i.button`
   cursor: pointer;
   width: 32px;
   height: 32px;
