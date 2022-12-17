@@ -6,18 +6,15 @@ import { PageTemplate } from 'src/presentation/PageTemplate';
 function ResizeObserverPage() {
   return (
     <PageTemplate title="ResizeObserver">
-      <ObservedBox color="aliceblue" />
-      <ObservedBox color="lemonchiffon" withMargin={true} />
-      <ObservedBox color="mistyrose" contentBox={true} />
-      <ObservedBox color="lavender" withMargin={true} contentBox={true} />
+      <ObservedBox color="lemonchiffon" />
+      <ObservedBox color="lavender" contentBox={true} />
     </PageTemplate>
   );
 }
 
 type Props = {
-  color: 'aliceblue' | 'lemonchiffon' | 'mistyrose' | 'lavender';
+  color: 'lemonchiffon' | 'lavender';
   contentBox?: boolean;
-  withMargin?: boolean;
 };
 
 const toNameSize = <T extends Record<string, number>>(obj: T) =>
@@ -69,10 +66,7 @@ function ObservedBox({
 
   return (
     <Container {...props} ref={ref} className={className}>
-      <ul>
-        <li>box-sizing: {props.contentBox ? 'content-box' : 'border-box'}</li>
-        <li>margin: {props.withMargin ? 'true' : 'false'}</li>
-      </ul>
+      <p>box-sizing: {props.contentBox ? 'content-box' : 'border-box'}</p>
       {definitionList.map(({ title, list }) => (
         <DefinitionSection key={title} title={title} list={list} />
       ))}
@@ -103,13 +97,14 @@ function DefinitionSection({ title, list }: Definition) {
 }
 
 const StyledSection = styled.section`
+  margin: 8px 0;
+
   & > h3 {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 4px;
   }
 
-  margin: 8px 0;
   & > dl {
     border: 1px solid #000;
     & > div {
@@ -134,8 +129,8 @@ const StyledSection = styled.section`
 `;
 
 const Container = styled.div<Props>`
-  width: 100%;
-  padding: 10px 20px;
+  width: 90%;
+  padding: 10px;
   box-sizing: ${({ contentBox }) =>
     contentBox ? 'content-box' : 'border-box'};
   & > * {
@@ -143,7 +138,13 @@ const Container = styled.div<Props>`
   }
   border: 5px solid #000;
   background-color: ${({ color }) => color};
-  margin: ${({ withMargin }) => (withMargin ? '10px 5px' : 0)};
+  margin-top: 8px;
+
+  & > p {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
 `;
 
 export default ResizeObserverPage;
