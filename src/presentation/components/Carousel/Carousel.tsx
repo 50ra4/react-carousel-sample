@@ -449,4 +449,12 @@ const StyledCarousel = styled(Carousel)`
       }
     }
   }
+
+  @media screen and (min-width: 401px) {
+    &:not(:hover) {
+      ${PreviewButton}, ${NextButton}, ${Indicator} {
+        display: none;
+      }
+    }
+  }
 `;
