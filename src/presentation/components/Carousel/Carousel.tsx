@@ -438,5 +438,15 @@ export function CustomUICarousel({
   children,
   ...props
 }: CustomUICarouselProps) {
-  return <Carousel {...props}>{children}</Carousel>;
+  return <StyledCarousel {...props}>{children}</StyledCarousel>;
 }
+
+const StyledCarousel = styled(Carousel)`
+  @media screen and (max-width: 400px) {
+    & {
+      ${PreviewButton}, ${NextButton}, ${Indicator} {
+        display: none;
+      }
+    }
+  }
+`;
