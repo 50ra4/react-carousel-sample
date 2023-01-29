@@ -66,6 +66,7 @@ export type CarouselOptions = {
 export type CarouselProps = CarouselOptions & {
   className?: string;
   carouselKey: string;
+  onVisibleLast?: (isVisible: boolean) => void;
   children: React.ReactNode;
 };
 
@@ -156,6 +157,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       disabledIndicator,
       disabledPreviousButton,
       disabledNextButton,
+      onVisibleLast,
       children,
     },
     ref,
@@ -231,6 +233,13 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     const scrollToNext = useCallback(() => {
       scrollToSlide(nextSlideIndex);
     }, [nextSlideIndex, scrollToSlide]);
+
+    useEffect(() => {
+      if (!onVisibleLast) {
+        return;
+      }
+      onVisibleLast(isDisplayedLastSlide);
+    }, [isDisplayedLastSlide, onVisibleLast]);
 
     useEffect(() => {
       if (!autoplay) {
@@ -450,13 +459,16 @@ export function CustomUICarousel({
   const ref = useRef<HTMLDivElement | null>(null);
   const isHover = useIsHover(ref);
 
+  const [isVisibleLast, setIsVisibleLast] = useState(false);
+
   return (
     <Carousel
       {...props}
       ref={ref}
+      onVisibleLast={setIsVisibleLast}
       disabledIndicator={!!isSP || !isHover}
       disabledPreviousButton={!!isSP || !isHover}
-      disabledNextButton={!!isSP || !isHover}
+      disabledNextButton={isSP ? !isVisibleLast : !isHover}
     >
       {children}
     </Carousel>
