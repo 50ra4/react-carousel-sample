@@ -8,6 +8,7 @@ import React, {
 import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 import { useContentWidth } from 'src/hooks/useContentWidth';
+import { useIsHover } from 'src/hooks/useIsHover';
 
 type Peek = { before: number; after: number };
 type PeekOption = number | Partial<Peek>;
@@ -153,11 +154,13 @@ export function Carousel({
   disabledNextButton,
   children,
 }: CarouselProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
   const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
   const sliderRef = useRef<HTMLOListElement | null>(null);
   const sliderWidth = useContentWidth(sliderRef);
 
-  const [isHover, setIsHover] = useState(false);
+  const isHover = useIsHover(rootRef);
 
   const scrollToSlide = useCallback(
     (index: number) => {
@@ -294,15 +297,7 @@ export function Carousel({
   }, [scrollToSlide, startAt]);
 
   return (
-    <Root
-      className={className}
-      onMouseEnter={() => {
-        setIsHover(true);
-      }}
-      onMouseLeave={() => {
-        setIsHover(false);
-      }}
-    >
+    <Root ref={rootRef} className={className}>
       <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
         {slides.map(({ slideId, child }) => (
           <Slide key={slideId} id={slideId} width={slideWidth}>
