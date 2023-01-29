@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 import { useContentWidth } from 'src/hooks/useContentWidth';
 import { useIsHover } from 'src/hooks/useIsHover';
+import { useIsSP } from 'src/hooks/useMediaQuery';
 
 type Peek = { before: number; after: number };
 type PeekOption = number | Partial<Peek>;
@@ -438,5 +439,16 @@ export function CustomUICarousel({
   children,
   ...props
 }: CustomUICarouselProps) {
-  return <Carousel {...props}>{children}</Carousel>;
+  const isSP = useIsSP();
+
+  return (
+    <Carousel
+      {...props}
+      disabledIndicator={!!isSP}
+      disabledPreviousButton={!!isSP}
+      disabledNextButton={!!isSP}
+    >
+      {children}
+    </Carousel>
+  );
 }
