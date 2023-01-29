@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 import { useContentWidth } from 'src/hooks/useContentWidth';
 import { useIsHover } from 'src/hooks/useIsHover';
+import { useMergeRefs } from 'src/hooks/useMergeRefs';
 
 type Peek = { before: number; after: number };
 type PeekOption = number | Partial<Peek>;
@@ -139,204 +140,210 @@ function useCurrentSlideIndex<T extends HTMLElement = HTMLElement>(
   };
 }
 
-export function Carousel({
-  className,
-  carouselKey,
-  autoplay,
-  perView,
-  gap = 0,
-  peek: peekOption,
-  startAt,
-  rewind = true,
-  bound,
-  slideWidth: slideWidthOption,
-  disabledIndicator,
-  disabledPreviousButton,
-  disabledNextButton,
-  children,
-}: CarouselProps) {
-  const rootRef = useRef<HTMLDivElement | null>(null);
-
-  const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
-  const sliderRef = useRef<HTMLOListElement | null>(null);
-  const sliderWidth = useContentWidth(sliderRef);
-
-  const isHover = useIsHover(rootRef);
-
-  const scrollToSlide = useCallback(
-    (index: number) => {
-      const sliderElement = sliderRef.current;
-      if (!sliderElement) {
-        return;
-      }
-
-      const id = createSlideId(carouselKey, index);
-      const targetElement: HTMLElement | null = sliderElement.querySelector(
-        `#${id}`,
-      );
-      if (!targetElement) {
-        return;
-      }
-
-      const scrollX = sliderElement.scrollLeft;
-      const sliderPosition = sliderElement.getBoundingClientRect().left;
-      const targetPosition = targetElement.getBoundingClientRect().left;
-
-      sliderElement.scrollTo({
-        left: scrollX + targetPosition - sliderPosition,
-      });
-    },
-    [carouselKey],
-  );
-
-  const slides = useMemo(
-    () =>
-      React.Children.toArray(children).map((child, i) => ({
-        child,
-        slideId: createSlideId(carouselKey, i),
-      })),
-    [carouselKey, children],
-  );
-
-  const { currentSlideIndex, isDisplayedLastSlide } = useCurrentSlideIndex(
-    sliderRef,
+export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
+  function Carousel(
     {
+      className,
       carouselKey,
-      total: slides.length,
+      autoplay,
+      perView,
+      gap = 0,
+      peek: peekOption,
+      startAt,
+      rewind = true,
+      bound,
+      slideWidth: slideWidthOption,
+      disabledIndicator,
+      disabledPreviousButton,
+      disabledNextButton,
+      children,
     },
-  );
+    ref,
+  ) {
+    const internalRef = useRef<HTMLDivElement | null>(null);
+    const rootRef = useMergeRefs([ref, internalRef]);
 
-  const isCurrentSlideFirst = currentSlideIndex === 0;
-  const canScrollToPrevious = rewind || !isCurrentSlideFirst;
-  const previousSlideIndex = isCurrentSlideFirst
-    ? slides.length - 1
-    : currentSlideIndex - 1;
+    const peek = useMemo(() => persePeekOption(peekOption), [peekOption]);
+    const sliderRef = useRef<HTMLOListElement | null>(null);
+    const sliderWidth = useContentWidth(sliderRef);
 
-  const isCurrentSlideLast = currentSlideIndex === slides.length - 1;
-  const shouldScrollToFirst =
-    isCurrentSlideLast || (!!bound && isDisplayedLastSlide);
-  const canScrollToNext = rewind || !shouldScrollToFirst;
-  const nextSlideIndex = shouldScrollToFirst ? 0 : currentSlideIndex + 1;
+    const isHover = useIsHover(internalRef);
 
-  const scrollToPrevious = useCallback(() => {
-    scrollToSlide(previousSlideIndex);
-  }, [previousSlideIndex, scrollToSlide]);
+    const scrollToSlide = useCallback(
+      (index: number) => {
+        const sliderElement = sliderRef.current;
+        if (!sliderElement) {
+          return;
+        }
 
-  const scrollToNext = useCallback(() => {
-    scrollToSlide(nextSlideIndex);
-  }, [nextSlideIndex, scrollToSlide]);
+        const id = createSlideId(carouselKey, index);
+        const targetElement: HTMLElement | null = sliderElement.querySelector(
+          `#${id}`,
+        );
+        if (!targetElement) {
+          return;
+        }
 
-  useEffect(() => {
-    if (!autoplay) {
-      return;
-    }
+        const scrollX = sliderElement.scrollLeft;
+        const sliderPosition = sliderElement.getBoundingClientRect().left;
+        const targetPosition = targetElement.getBoundingClientRect().left;
 
-    if (isHover) {
-      return;
-    }
+        sliderElement.scrollTo({
+          left: scrollX + targetPosition - sliderPosition,
+        });
+      },
+      [carouselKey],
+    );
 
-    if (!canScrollToNext) {
-      return;
-    }
+    const slides = useMemo(
+      () =>
+        React.Children.toArray(children).map((child, i) => ({
+          child,
+          slideId: createSlideId(carouselKey, i),
+        })),
+      [carouselKey, children],
+    );
 
-    const timer = setInterval(() => {
-      scrollToNext();
-    }, autoplay);
+    const { currentSlideIndex, isDisplayedLastSlide } = useCurrentSlideIndex(
+      sliderRef,
+      {
+        carouselKey,
+        total: slides.length,
+      },
+    );
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, [autoplay, canScrollToNext, isHover, scrollToNext]);
+    const isCurrentSlideFirst = currentSlideIndex === 0;
+    const canScrollToPrevious = rewind || !isCurrentSlideFirst;
+    const previousSlideIndex = isCurrentSlideFirst
+      ? slides.length - 1
+      : currentSlideIndex - 1;
 
-  useEffect(() => {
-    if (perView && perView < 1) {
-      throw new Error('perView must be 1 or more.');
-    }
-    if (perView && slideWidthOption) {
-      throw new Error('both perView and slideWidth cannot be set.');
-    }
-  }, [perView, slideWidthOption]);
+    const isCurrentSlideLast = currentSlideIndex === slides.length - 1;
+    const shouldScrollToFirst =
+      isCurrentSlideLast || (!!bound && isDisplayedLastSlide);
+    const canScrollToNext = rewind || !shouldScrollToFirst;
+    const nextSlideIndex = shouldScrollToFirst ? 0 : currentSlideIndex + 1;
 
-  const { slideWidth, sliderPaddingRight } = useMemo((): {
-    slideWidth?: number;
-    sliderPaddingRight: number;
-  } => {
-    const initial = {
-      sliderPaddingRight: 0,
-    };
-    if (!sliderWidth) {
+    const scrollToPrevious = useCallback(() => {
+      scrollToSlide(previousSlideIndex);
+    }, [previousSlideIndex, scrollToSlide]);
+
+    const scrollToNext = useCallback(() => {
+      scrollToSlide(nextSlideIndex);
+    }, [nextSlideIndex, scrollToSlide]);
+
+    useEffect(() => {
+      if (!autoplay) {
+        return;
+      }
+
+      if (isHover) {
+        return;
+      }
+
+      if (!canScrollToNext) {
+        return;
+      }
+
+      const timer = setInterval(() => {
+        scrollToNext();
+      }, autoplay);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }, [autoplay, canScrollToNext, isHover, scrollToNext]);
+
+    useEffect(() => {
+      if (perView && perView < 1) {
+        throw new Error('perView must be 1 or more.');
+      }
+      if (perView && slideWidthOption) {
+        throw new Error('both perView and slideWidth cannot be set.');
+      }
+    }, [perView, slideWidthOption]);
+
+    const { slideWidth, sliderPaddingRight } = useMemo((): {
+      slideWidth?: number;
+      sliderPaddingRight: number;
+    } => {
+      const initial = {
+        sliderPaddingRight: 0,
+      };
+      if (!sliderWidth) {
+        return initial;
+      }
+
+      if (perView) {
+        const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
+        const perWidth = (sliderWidth - gapTotal) / perView;
+        return {
+          slideWidth: perWidth,
+          sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
+        };
+      }
+
+      if (slideWidthOption) {
+        return {
+          slideWidth: slideWidthOption,
+          sliderPaddingRight: bound ? 0 : sliderWidth - slideWidthOption,
+        };
+      }
+
       return initial;
-    }
+    }, [bound, gap, perView, slideWidthOption, sliderWidth]);
 
-    if (perView) {
-      const gapTotal = perView > 1 ? (perView - 1) * (gap ?? 0) : 0;
-      const perWidth = (sliderWidth - gapTotal) / perView;
-      return {
-        slideWidth: perWidth,
-        sliderPaddingRight: bound ? 0 : (perView - 1) * sliderWidth,
-      };
-    }
+    const gapWidth = !!perView && perView > 1 ? gap : 0;
+    const isMultipleSlide = sliderWidth !== slideWidth;
 
-    if (slideWidthOption) {
-      return {
-        slideWidth: slideWidthOption,
-        sliderPaddingRight: bound ? 0 : sliderWidth - slideWidthOption,
-      };
-    }
+    useEffect(() => {
+      if (!startAt) {
+        return;
+      }
+      scrollToSlide(startAt);
+    }, [scrollToSlide, startAt]);
 
-    return initial;
-  }, [bound, gap, perView, slideWidthOption, sliderWidth]);
-
-  const gapWidth = !!perView && perView > 1 ? gap : 0;
-  const isMultipleSlide = sliderWidth !== slideWidth;
-
-  useEffect(() => {
-    if (!startAt) {
-      return;
-    }
-    scrollToSlide(startAt);
-  }, [scrollToSlide, startAt]);
-
-  return (
-    <Root ref={rootRef} className={className}>
-      <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
-        {slides.map(({ slideId, child }) => (
-          <Slide key={slideId} id={slideId} width={slideWidth}>
-            {child}
-            <Snapper isMultipleSlide={isMultipleSlide} />
-          </Slide>
-        ))}
-        <SliderPadding inserted={sliderPaddingRight || peek.after} />
-      </Slider>
-      {!disabledPreviousButton && canScrollToPrevious && (
-        <PreviewButton onClick={scrollToPrevious}>
-          Go to previous slide
-        </PreviewButton>
-      )}
-      {!disabledNextButton && canScrollToNext && (
-        <NextButton onClick={scrollToNext}>Go to next slide</NextButton>
-      )}
-      {!disabledIndicator && (
-        <Indicator>
-          <IndicatorList>
-            {slides.map(({ slideId }, i) => (
-              <IndicatorItem key={slideId}>
-                <IndicatorButton
-                  isActive={currentSlideIndex === i}
-                  onClick={() => {
-                    scrollToSlide(i);
-                  }}
-                >
-                  Go to {i + 1} slide
-                </IndicatorButton>
-              </IndicatorItem>
-            ))}
-          </IndicatorList>
-        </Indicator>
-      )}
-    </Root>
-  );
-}
+    return (
+      <Root ref={rootRef} className={className}>
+        <Slider ref={sliderRef} gapWidth={gapWidth} peek={peek}>
+          {slides.map(({ slideId, child }) => (
+            <Slide key={slideId} id={slideId} width={slideWidth}>
+              {child}
+              <Snapper isMultipleSlide={isMultipleSlide} />
+            </Slide>
+          ))}
+          <SliderPadding inserted={sliderPaddingRight || peek.after} />
+        </Slider>
+        {!disabledPreviousButton && canScrollToPrevious && (
+          <PreviewButton onClick={scrollToPrevious}>
+            Go to previous slide
+          </PreviewButton>
+        )}
+        {!disabledNextButton && canScrollToNext && (
+          <NextButton onClick={scrollToNext}>Go to next slide</NextButton>
+        )}
+        {!disabledIndicator && (
+          <Indicator>
+            <IndicatorList>
+              {slides.map(({ slideId }, i) => (
+                <IndicatorItem key={slideId}>
+                  <IndicatorButton
+                    isActive={currentSlideIndex === i}
+                    onClick={() => {
+                      scrollToSlide(i);
+                    }}
+                  >
+                    Go to {i + 1} slide
+                  </IndicatorButton>
+                </IndicatorItem>
+              ))}
+            </IndicatorList>
+          </Indicator>
+        )}
+      </Root>
+    );
+  },
+);
 
 const SliderPadding = styled.div<{ inserted: number }>`
   padding-left: ${({ inserted }) => inserted}px;
@@ -439,12 +446,14 @@ export function CustomUICarousel({
   children,
   ...props
 }: CustomUICarouselProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const isHover = useIsHover(ref);
   return (
     <Carousel
       {...props}
-      disabledIndicator={!!isMobile}
-      disabledPreviousButton={!!isMobile}
-      disabledNextButton={!!isMobile}
+      disabledIndicator={!!isMobile || !isHover}
+      disabledPreviousButton={!!isMobile || !isHover}
+      disabledNextButton={!!isMobile || !isHover}
     >
       {children}
     </Carousel>
