@@ -13,7 +13,7 @@ const toWidth = ({ borderBoxSize, contentRect }: ResizeObserverEntryObject) =>
   borderBoxSize?.inlineSize ?? contentRect?.width ?? null;
 
 export function useContentWidth<T extends HTMLElement = HTMLElement>(
-  ref: React.RefObject<T | null>,
+  ref?: React.RefObject<T | null>,
   { duration = 250 }: Options = {},
 ) {
   const [width, setWidth] = useState<number | null>(null);

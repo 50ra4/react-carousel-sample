@@ -19,11 +19,11 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>({
   ref,
   callback,
 }: {
-  ref: React.RefObject<T | null>;
+  ref?: React.RefObject<T | null>;
   callback: (value: ResizeObserverEntryObject) => void;
 }) {
   useEffect(() => {
-    const target = ref.current;
+    const target = ref ? ref.current : document.body;
     if (!target) {
       return;
     }
@@ -45,12 +45,11 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>({
       });
     };
 
-    const element = ref.current;
     const observer = new ResizeObserver(callbackFn);
-    observer.observe(element);
+    observer.observe(target);
 
     return () => {
-      observer.unobserve(element);
+      observer.unobserve(target);
     };
   }, [callback, ref]);
 }
