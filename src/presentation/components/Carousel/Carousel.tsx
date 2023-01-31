@@ -5,6 +5,7 @@ import React, {
   useState,
   useMemo,
 } from 'react';
+import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { CircleTriangleButton } from '../CircleTriangleButton/CircleTriangleButton';
 import { useContentWidth } from 'src/hooks/useContentWidth';
@@ -438,5 +439,14 @@ export function CustomUICarousel({
   children,
   ...props
 }: CustomUICarouselProps) {
-  return <Carousel {...props}>{children}</Carousel>;
+  return (
+    <Carousel
+      {...props}
+      disabledIndicator={!!isMobile}
+      disabledPreviousButton={!!isMobile}
+      disabledNextButton={!!isMobile}
+    >
+      {children}
+    </Carousel>
+  );
 }
