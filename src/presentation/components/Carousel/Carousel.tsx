@@ -421,3 +421,22 @@ const NextButton = styled(CircleTriangleButton)`
   top: 50%;
   right: 8px;
 `;
+
+/**
+ * exclude disabledXXX key from props
+ */
+type ExcludeDisabledKey<K extends string> = K extends `disabled${string}`
+  ? K
+  : never;
+
+type CustomUICarouselProps = Omit<
+  CarouselProps,
+  ExcludeDisabledKey<keyof CarouselProps>
+>;
+
+export function CustomUICarousel({
+  children,
+  ...props
+}: CustomUICarouselProps) {
+  return <Carousel {...props}>{children}</Carousel>;
+}

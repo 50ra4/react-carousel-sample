@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Carousel } from '@/components/Carousel/Carousel';
+import { Carousel, CustomUICarousel } from '@/components/Carousel/Carousel';
 import { CarouselSampleSlide } from '@/components/Carousel/CarouselSampleSlide';
 import { Picture } from '@/components/Picture/Picture';
 import { SubSection } from '@/components/SubSection/SubSection';
@@ -208,6 +208,14 @@ function TopPage() {
               ))}
             </StyledCarousel>
           </StyledSubSection>
+
+          <StyledSubSection title="Custom UI">
+            <StyledCustomUICarousel carouselKey="custom-ui" perView={2}>
+              {Array8.map((count) => (
+                <CarouselSampleSlide key={count} count={count} />
+              ))}
+            </StyledCustomUICarousel>
+          </StyledSubSection>
         </SubSectionGroup>
       </Wrapper>
     </PageTemplate>
@@ -232,6 +240,7 @@ const Wrapper = styled.div`
 `;
 
 const StyledCarousel = styled(Carousel)``;
+const StyledCustomUICarousel = styled(CustomUICarousel)``;
 
 const SubSectionGroup = styled.div`
   display: flex;
@@ -246,7 +255,7 @@ const SubSectionGroup = styled.div`
   & > ${StyledSubSection} {
     margin: 0 8px 8px 0;
 
-    & > ${StyledCarousel} {
+    & > ${StyledCarousel}, & > ${StyledCustomUICarousel} {
       width: calc(calc(1280px - 24px) / 4);
       height: 225px;
     }

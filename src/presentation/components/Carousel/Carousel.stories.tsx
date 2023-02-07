@@ -6,7 +6,7 @@ import type {
 import React from 'react';
 import styled from 'styled-components';
 import { CarouselSampleSlide } from './CarouselSampleSlide';
-import { Carousel } from '@/components/Carousel/Carousel';
+import { Carousel, CustomUICarousel } from '@/components/Carousel/Carousel';
 import { Picture } from '@/components/Picture/Picture';
 
 const StyledWrapper = styled.div`
@@ -149,5 +149,13 @@ export const SlideWidth145: ComponentStoryObj<typeof Carousel> = {
     children,
     slideWidth: 640,
     gap: 1,
+  },
+};
+
+export const CustomUI: ComponentStoryObj<typeof CustomUICarousel> = {
+  args: {
+    carouselKey: 'custom-ui',
+    children,
+    perView: 3,
   },
 };
